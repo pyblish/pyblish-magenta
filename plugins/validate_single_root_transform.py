@@ -20,7 +20,7 @@ class ValidateSingleRootTransform(pyblish.api.Validator):
         member_nodes_paths = cmds.ls(member_nodes, type='dagNode', long=True)
 
         roots = set()
-        for node in :
+        for node in member_nodes_paths:
             root = getRootNode(node)
             roots.add(root)
 
