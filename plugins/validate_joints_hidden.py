@@ -5,12 +5,15 @@ from maya import cmds
 def isVisible(node, displayLayer=True, intermediateObject=True, parentHidden=True, visibility=True):
     """
     Returns whether a node is hidden by one of the following methods (if parameter is True):
-    - Disabled Display Layer
-    - Set as Intermediate Object
-    - Whether any of its parent nodes is hidden
-    - Whether the node's visibility is toggled off
+    - The node exists (always checked)
+    - The node must be a dagNode (always checked)
+    - The node's visibility is off.
+    - The node is set as intermediate Object.
+    - The node is in a disabled displayLayer.
+    - Whether any of its parent nodes is hidden.
 
     Roughly based on: http://ewertb.soundlinker.com/mel/mel.098.php
+
     :return: Whether the node is visible in the scene
     :rtype: bool
     """
