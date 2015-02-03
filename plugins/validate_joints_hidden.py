@@ -30,7 +30,7 @@ def isVisible(node, displayLayer=True, intermediateObject=True, parentHidden=Tru
             return False
 
     if intermediateObject and cmds.objectType(node, isAType='shape'):
-        if not cmds.getAttr('{0}.intermediateObject'.format(node)):
+        if cmds.getAttr('{0}.intermediateObject'.format(node)):
             return False
 
     if displayLayer:
