@@ -1,6 +1,7 @@
 import pyblish.api
 from maya import cmds
 
+
 def getRootNode(longPath):
     return '|' + longPath.lstrip('|').split("|", 1)[0]
 

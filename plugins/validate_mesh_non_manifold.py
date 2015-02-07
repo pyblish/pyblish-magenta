@@ -3,7 +3,7 @@ from maya import cmds
 
 
 class ValidateMeshNonManifold(pyblish.api.Validator):
-    """ Validate meshes don't have non-manifold edges of vertices """
+    """ Validate meshes don't have non-manifold edges or vertices """
     families = ['modeling']
     hosts = ['maya']
     category = 'geometry'

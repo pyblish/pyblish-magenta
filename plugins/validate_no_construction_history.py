@@ -3,7 +3,7 @@ from maya import cmds
 
 
 class ValidateNoConstructionHistory(pyblish.api.Validator):
-    """Ensure no construction history exists in for the instances """
+    """ Ensure no construction history exists in for the instances """
     families = ['modeling']
     hosts = ['maya']
     category = 'geometry'

@@ -3,7 +3,7 @@ from maya import cmds
 
 
 class ValidateNoMultipleUVSets(pyblish.api.Validator):
-    """Ensure no multiple UV sets exist for each polygon mesh """
+    """ Ensure no multiple UV sets exist for each polygon mesh """
     families = ['modeling']
     hosts = ['maya']
     category = 'uv'

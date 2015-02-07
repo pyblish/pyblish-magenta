@@ -6,8 +6,8 @@ class ValidateNoNullTransforms(pyblish.api.Validator):
     """Ensure no null transforms are in the scene.
        We will consider transforms with only intermediate objects under it to be null transform as well. 
        
-       Note: `listRelatives()` has a noIntermediate parameter; though it doesn't do anything
-                when used together with the children parameter, but only with shapes=True)
+       .. note:: `listRelatives()` has a noIntermediate parameter; though it doesn't do anything
+                 when used together with the children parameter, but only with shapes=True)
     """
     families = ['modeling']
     hosts = ['maya']
