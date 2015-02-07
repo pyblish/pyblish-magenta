@@ -11,6 +11,8 @@ class ValidateTransformFrozen(pyblish.api.Validator):
         .. note::
             This will also catch camera transforms if those are in the instances.
     """
+    # TODO: Check if this suffer from floating point precision errors. If so we need to implement a set tolerance.
+
     families = ['modeling']
     hosts = ['maya']
     category = 'geometry'
