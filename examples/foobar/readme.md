@@ -15,17 +15,17 @@ Here are some examples from dev:
 Per-Model
 
 - {project}/dev/modeling/characters/heroChar/maya
-- {project}/dev/modeling/characters/heroChar/data/obj
+- {project}/dev/modeling/characters/heroChar/data/obj (not in there now for simplicity)
 - {project}/dev/rigging/characters/heroChar/maya
 - {project}/dev/lookDev/characters/heroChar/maya
-- {project}/dev/lookDev/characters/heroChar/photoshop
+- {project}/dev/lookDev/characters/heroChar/photoshop (not in there now for simplicity)
 
 Per-Shot
 
 - {project}/dev/animation/s01e01/sq010_sh010_aroundCorner
 - {project}/dev/animation/s01e01/sq010_sh020_heroCU
 - {project}/dev/animation/s01e01/sq010_sh020_heroCU
-- {project}/dev/fx/s01e01/sq010_sh020_heroCU/houdini
+- {project}/dev/fx/s01e01/sq010_sh020_heroCU/houdini (not in there now for simplicity)
 - {project}/dev/fx/s01e01/sq010_sh020_heroCU/maya
 
 And some examples from asset:
@@ -41,22 +41,22 @@ Per-Shot
 
 - {project}/asset/shots/s01e01/animation/sq010_sh010_aroundCorner/caches
 - {project}/asset/shots/s01e01/animation/sq010_sh010_aroundCorner/cameras
-- {project}/asset/shots/s01e01/animation/sq010_sh010_aroundCorner/scenes
+- {project}/asset/shots/s01e01/animation/sq010_sh010_aroundCorner/scenes (not in there now for simplicity)
 - {project}/asset/shots/s01e01/animation/sq010_sh010_aroundCorner/cameras
-- {project}/asset/shots/s01e01/animation/sq010_sh010_aroundCorner/scenes
-- {project}/asset/renders/s01e01/edit
-- {project}/asset/renders/s01e01/maya/sq010_sh010_aroundCorner
-- {project}/asset/renders/s01e01/comp/sq010_sh010_aroundCorner
-- {project}/asset/renders/s01e01/playblast/sq010_sh010_aroundCorner
+- {project}/asset/shots/s01e01/animation/sq010_sh010_aroundCorner/scenes (not in there now for simplicity)
+- {project}/asset/renders/s01e01/edit (not in there now for simplicity)
+- {project}/asset/renders/s01e01/maya/sq010_sh010_aroundCorner (not in there now for simplicity)
+- {project}/asset/renders/s01e01/comp/sq010_sh010_aroundCorner (not in there now for simplicity)
+- {project}/asset/renders/s01e01/playblast/sq010_sh010_aroundCorner (not in there now for simplicity)
 
 Pros
 
-    Development and published assets are completely separate (project/dev vs project/asset)
-        One of the original concepts whas that you should be able to back up a full 'final' version of a project by only transferring the assets folder. (Though this ended up being invalid as we've had separate resources repositories) Next iteration should improve on this.
-    The development side being workspace oriented allows bigger studios to keep departments completely separate (rigging won't touch modeling).
-    For the artist it's easy to understand where they should be working for a specific task (eg. Animation or Modeling)
+- Development and published assets are completely separate (project/dev vs project/asset)
+  - One of the original concepts whas that you should be able to back up a full 'final' version of a project by only transferring the assets folder. (Though this ended up being invalid as we've had separate resources repositories) Next iteration should improve on this.
+- The development side being workspace oriented allows bigger studios to keep departments completely separate (rigging won't touch modeling).
+- For the artist it's easy to understand where they should be working for a specific task (eg. Animation or Modeling)
 
 Cons
 
-    Hard for newcomers to see how the workspace data gets reformed into the asset oriented space and know where it ends up.
-    Sometimes the asset oriented structure is nested in a (to newcomers) confusing manner, eg. {project}/asset/shots/{parentHierarchy}/animation/{assetName}
+- Hard for newcomers to see how the workspace data gets reformed into the asset oriented space and know where it ends up.
+- Sometimes the asset oriented structure is nested in a (to newcomers) confusing manner, eg. {project}/asset/shots/{parentHierarchy}/animation/{assetName}
