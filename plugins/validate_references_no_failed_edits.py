@@ -2,7 +2,7 @@ import pyblish.api
 from maya import cmds
 
 
-class ValidateReferencesOnly(pyblish.api.Validator):
+class ValidateReferencesNoFailedEdits(pyblish.api.Validator):
     """ Validate that all referenced nodes' reference nodes don't have failed reference edits.
 
         Failed reference edits can happen if you apply a change to a referenced object in the scene and then change
