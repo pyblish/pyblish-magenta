@@ -62,8 +62,7 @@ class ValidateJointsHidden(pyblish.api.Validator):
 
     def process_instance(self, instance):
         """Process all the nodes in the instance 'objectSet' """
-        member_nodes = cmds.sets(instance.name, q=1)
-        joints = cmds.ls(member_nodes, type='joint', dag=True, long=True)
+        joints = cmds.ls(instance, type='joint', long=True)
 
         invalid = []
         for joint in joints:

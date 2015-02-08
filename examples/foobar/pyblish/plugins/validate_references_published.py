@@ -27,7 +27,7 @@ class ValidateReferencesPublished(pyblish.api.Validator):
         
        Note: The 'published' location can hugely differ per pipeline.
              But this will give a good example on how to go about an implementation.
-        """
+    """
     families = ['layout']
     hosts = ['maya']
     category = 'layout'
