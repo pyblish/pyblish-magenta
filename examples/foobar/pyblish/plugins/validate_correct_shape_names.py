@@ -24,18 +24,17 @@ class ValidateCorrectShapeNames(pyblish.api.Validator):
             Then it becomes harder to define where what number should be when a node contains multiple shapes,
             for example with many controls in rigs existing of multiple curves.
     """
-    families = ['modeling']
+    families = ['model']
     hosts = ['maya']
     category = 'cleanup'
     optional = True
     version = (0, 1, 0)
 
     def process_instance(self, instance):
-        """Process all the nodes in the instance 'objectSet' """
-        member_nodes = cmds.sets(instance.name, q=1)
+        """Process all the shape nodes in the instance """
+        shapes = cmds.ls(instance, shapes=True, long=True)
 
         invalid = []
-        shapes = cmds.ls(member_nodes, dag=True, shapes=True, long=True)
         for shape in shapes:
             transform = cmds.listRelatives(shape, parent=True, fullPath=True)[0]
 
@@ -46,7 +45,6 @@ class ValidateCorrectShapeNames(pyblish.api.Validator):
             # Upon renaming nodes in Maya that is the pattern Maya will act towards.
             transform_no_num = transform_name.rstrip("0123456789")
             pattern = '^{transform}[0-9]*Shape[0-9]*$'.format(transform=transform_no_num)
-            print pattern
             if not re.match(pattern, shape_name):
                 invalid.append(shape)
 

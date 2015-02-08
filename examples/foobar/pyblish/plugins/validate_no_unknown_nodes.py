@@ -15,9 +15,7 @@ class ValidateNoUnknownNodes(pyblish.api.Validator):
     version = (0, 1, 0)
 
     def process_instance(self, instance):
-        """Process all the nodes in the instance 'objectSet' """
-        member_nodes = cmds.sets(instance.name, q=1)
-
-        unknown_nodes = cmds.ls(member_nodes, type='unknown')
+        """Process all the nodes in the instance """
+        unknown_nodes = cmds.ls(instance, type='unknown')
         if unknown_nodes:
             raise ValueError("Unkown nodes found: {0}".format(unknown_nodes))

@@ -22,6 +22,11 @@ def is_subdir(path, root_dir):
         return True
 
 
+def getAllParents(longName):
+    parents = longName.split("|")[1:-1]
+    return ['|{0}'.format('|'.join(parents[0:i+1])) for i in xrange(len(parents))]
+
+
 class SelectModelInstance(pyblish.api.Selector):
     hosts = ["maya"]
 
@@ -64,12 +69,18 @@ class SelectModelInstance(pyblish.api.Selector):
 
 
         # get all children shapes (because we're modeling we only care about shapes)
-        shapes = cmds.ls(root_transform, dag=True, shapes=True, long=True)
+        shapes = cmds.ls(root_transform, dag=True, shapes=True, long=True, noIntermediate=True)
         if not shapes:
             return
 
+        # The nodes we want are the shape nodes including all their parents. So let's get them.
+        nodes = set()
+        nodes.update(shapes)
+        for shape in shapes:
+            nodes.update(getAllParents(shape))
+
         instance = context.create_instance(name=assetName)
         instance.set_data("family", "model")
-        for shape in shapes:
-            instance.add(shape)
+        for node in nodes:
+            instance.add(node)
 

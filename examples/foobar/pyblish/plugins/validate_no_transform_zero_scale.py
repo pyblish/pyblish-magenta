@@ -14,21 +14,22 @@ class ValidateNoTransformZeroScale(pyblish.api.Validator):
     """
     # TODO: Check if this suffer from floating point precision errors. If so we need to implement a set tolerance.
 
-    families = ['modeling']
+    families = ['model']
     hosts = ['maya']
     category = 'geometry'
     version = (0, 1, 0)
 
+    __epsilon = 1e-5
+
     def process_instance(self, instance):
-        """Process all the nodes in the instance 'objectSet' """
-        member_nodes = cmds.sets(instance.name, q=1)
-        transforms = cmds.ls(member_nodes, type='transform')
+        """Process all the nodes in the instance """
+        transforms = cmds.ls(instance, type='transform')
 
         invalid = []
         for transform in transforms:
-            scale = cmds.xform(transform, q=1, scale=True, objectSpace=True)
-            if scale == [0.0, 0.0, 0.0]:
+            scale = cmds.xform(transform, q=1, scale=True, objectSpace=True, relative=True)
+            if any(abs(x) < self.__epsilon for x in scale):
                 invalid.append(transform)
 
         if invalid:
-            raise ValueError("Nodes found with unfrozen transforms: {0}".format(invalid))
+            raise ValueError("Nodes found with (close to) zero scale: {0}".format(invalid))

@@ -8,22 +8,20 @@ def getRootNode(longPath):
 
 class ValidateSingleRootTransform(pyblish.api.Validator):
     """ Validate all nodes are in a single root """
-    families = ['rig']
+    families = ['rig', 'model']
     hosts = ['maya']
     category = 'rig'
     version = (0, 1, 0)
 
     def process_instance(self, instance):
-        """Process all the nodes in the instance 'objectSet' """
-        member_nodes = cmds.sets(instance.name, q=1)
-
+        """Process all the nodes in the instance """
         # ensure long names so we can get root by strings (fastest way?)
-        member_nodes_paths = cmds.ls(member_nodes, type='dagNode', long=True)
+        member_nodes_paths = cmds.ls(instance, type='dagNode', long=True)
 
         roots = set()
         for node in member_nodes_paths:
             root = getRootNode(node)
             roots.add(root)
 
-        if roots:
+        if len(roots) > 1:
             raise ValueError("Multiple root nodes found named shapes found: {0}".format(list(roots)))

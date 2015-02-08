@@ -12,7 +12,7 @@ class ValidateNoRename(pyblish.api.Validator):
         If so it can be a cue for a scene/model that hasn't been cleaned yet.
         This will check for geometry related names, like nurbs & polygons.
     """
-    families = ['modeling']
+    families = ['model']
     hosts = ['maya']
     category = 'cleanup'
     optional = True
@@ -26,8 +26,7 @@ class ValidateNoRename(pyblish.api.Validator):
 
     def process_instance(self, instance):
         """Process all the nodes in the instance 'objectSet' """
-        member_nodes = cmds.sets(instance.name, q=1)
-        transforms = cmds.ls(member_nodes, type='transform')
+        transforms = cmds.ls(instance, type='transform')
         
         invalid = []
         for t in transforms:

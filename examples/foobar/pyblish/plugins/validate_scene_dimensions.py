@@ -4,7 +4,7 @@ from maya import cmds
 
 class ValidateSceneDimensions(pyblish.api.Validator):
     """ Ensure objects are not immensely huge and not positioned in the far far corners of the 3D space. """
-    families = ['modeling']
+    families = ['model']
     hosts = ['maya']
     category = 'geometry'
     optional = True
@@ -13,12 +13,12 @@ class ValidateSceneDimensions(pyblish.api.Validator):
     __far = 1e5  # what we consider the far distance
 
     def process_instance(self, instance):
-        """Process all the nodes in the instance 'objectSet' """
-        member_nodes = cmds.sets(instance.name, q=1)
-        transform = cmds.ls(member_nodes, type='transform', long=True)
+        """Process all the nodes in the instance """
+        # TODO: Maybe swap transform type with dagNode type?
+        transforms = cmds.ls(instance, type='transform', long=True)
 
         invalid = []
-        for node in member_nodes:
+        for node in transforms:
             bounding_box = cmds.xform(node, q=1, worldSpace=True, boundingBox=True)
             if any(x < -self.__far for x in bounding_box[:3]) or any(x > self.__far for x in bounding_box[3:]):
                 invalid.append(node)

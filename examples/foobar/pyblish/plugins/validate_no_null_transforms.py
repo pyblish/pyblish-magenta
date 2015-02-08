@@ -9,7 +9,7 @@ class ValidateNoNullTransforms(pyblish.api.Validator):
        .. note:: `listRelatives()` has a noIntermediate parameter; though it doesn't do anything
                  when used together with the children parameter, but only with shapes=True)
     """
-    families = ['modeling']
+    families = ['model']
     hosts = ['maya']
     category = 'cleanup'
     version = (0, 1, 0)
@@ -33,9 +33,8 @@ class ValidateNoNullTransforms(pyblish.api.Validator):
         return True
 
     def process_instance(self, instance):
-        """Process all the nodes in the instance 'objectSet' """
-        member_nodes = cmds.sets(instance.name, q=1)
-        transforms = cmds.ls(member_nodes, type='transform', long=True)
+        """Process all the transform nodes in the instance """
+        transforms = cmds.ls(instance, type='transform', long=True)
         
         invalid = []
         for transform in transforms:

@@ -13,7 +13,7 @@ class ValidateTransformFrozen(pyblish.api.Validator):
     """
     # TODO: Check if this suffer from floating point precision errors. If so we need to implement a set tolerance.
 
-    families = ['modeling']
+    families = ['model']
     hosts = ['maya']
     category = 'geometry'
     version = (0, 1, 0)
@@ -25,8 +25,7 @@ class ValidateTransformFrozen(pyblish.api.Validator):
 
     def process_instance(self, instance):
         """Process all the nodes in the instance 'objectSet' """
-        member_nodes = cmds.sets(instance.name, q=1)
-        transforms = cmds.ls(member_nodes, type='transform')
+        transforms = cmds.ls(instance, type='transform')
 
         invalid = []
         for transform in transforms:

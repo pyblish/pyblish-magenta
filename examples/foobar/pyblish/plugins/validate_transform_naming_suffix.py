@@ -6,7 +6,7 @@ import re
 SUFFIX_NAMING_TABLE = {'mesh': ["_GEO", "_GES", "_GEP"],    # Geometry, GeometrySmooth, GeometryProxy
                        'nurbsCurve': ["_CRV"],              # Curve
                        'nurbsSurface': ["_NRB"],            # Nurbs
-                       None: ['_GPR']}                      # Transform with no shapes: group
+                       None: ['_GRP']}                      # Transform with no shapes: group
 
 ALLOW_IF_NOT_IN_SUFFIX_TABLE = True
 
@@ -17,7 +17,7 @@ class ValidateTransformNamingSuffix(pyblish.api.Validator):
         .. warning::
             This grabs the first child shape as a reference and doesn't use the others in the check.
     """
-    families = ['modeling']
+    families = ['model']
     hosts = ['maya']
     category = 'cleanup'
     optional = True
@@ -37,11 +37,10 @@ class ValidateTransformNamingSuffix(pyblish.api.Validator):
             return False
 
     def process_instance(self, instance):
-        """Process all the nodes in the instance 'objectSet' """
-        member_nodes = cmds.sets(instance.name, q=1)
+        """Process all the nodes in the instance """
+        transforms = cmds.ls(instance, type='transform', long=True)
 
         invalid = []
-        transforms = cmds.ls(member_nodes, type='transform', long=True)
         for transform in transforms:
             shapes = cmds.listRelatives(transform, shapes=True, fullPath=True)
 
@@ -55,4 +54,4 @@ class ValidateTransformNamingSuffix(pyblish.api.Validator):
                     invalid.append(transform)
 
         if invalid:
-            raise ValueError("Incorrectly named geometry transforms found: {0}".format(invalid))
+            raise ValueError("Incorrectly named geometry transforms: {0}".format(invalid))
