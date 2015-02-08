@@ -27,7 +27,7 @@ class ValidateShapeRenderStats(pyblish.api.Validator):
         for shape in shapes:
             for attr, requiredValue in self.__renderStats.iteritems():
                 if cmds.attributeQuery(attr, node=shape, exists=True):
-                    value = cmds.getAttr('{node}.{attr]'.format(node=shape, attr=attr))
+                    value = cmds.getAttr('{node}.{attr}'.format(node=shape, attr=attr))
                     if value != requiredValue:
                         invalid.append(shape)
 
