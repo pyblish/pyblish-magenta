@@ -11,17 +11,16 @@ class ValidateReferencesOnly(pyblish.api.Validator):
     version = (0, 1, 0)
 
     def process_instance(self, instance):
-        """Process all the nodes in the instance 'objectSet' """
-        member_nodes = cmds.sets(instance.name, q=1)
-        referenced_nodes = cmds.ls(member_nodes, referencedNodes=True, long=True)
+        """Process all the nodes in the instance """
+        referenced_nodes = cmds.ls(instance, referencedNodes=True, long=True)
 
-        if len(referenced_nodes) != len(member_nodes):
+        if len(referenced_nodes) != len(instance):
             # Now we know some nodes are not referenced
             # Let's compare by long names
-            member_nodes = cmds.ls(member_nodes, long=True)
+            member_nodes = cmds.ls(instance, long=True)
             referenced_nodes_lookup = frozenset(referenced_nodes)
 
-            non_referenced_nodes = [node for node in member_nodes if not node in referenced_nodes_lookup]
+            non_referenced_nodes = [node for node in member_nodes if node not in referenced_nodes_lookup]
             if non_referenced_nodes:
                 raise ValueError("Non-referenced nodes found: {0}".format(non_referenced_nodes))
 

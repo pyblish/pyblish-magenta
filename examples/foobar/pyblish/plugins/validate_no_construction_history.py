@@ -11,6 +11,12 @@ class ValidateNoConstructionHistory(pyblish.api.Validator):
 
     def process_instance(self, instance):
         """Process all the nodes in the instance """
+
+        # quick check first
+        if not cmds.listHistory(instance, pruneDagObjects=True):
+            return
+
+        # identify the invalid nodes
         invalid = []
         for node in instance:
             if cmds.listHistory(node, pruneDagObjects=True):
