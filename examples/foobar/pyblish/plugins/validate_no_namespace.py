@@ -6,7 +6,7 @@ def getNamespace(nodeName):
     # ensure only nodename
     nodeName = nodeName.rsplit("|")[-1]
     # ensure only namespace
-    return nodeName.rpartition(":", 1)[0]
+    return nodeName.rpartition(":")[0]
 
 
 class ValidateNoNamespace(pyblish.api.Validator):
