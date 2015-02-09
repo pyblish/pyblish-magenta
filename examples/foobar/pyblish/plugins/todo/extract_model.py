@@ -29,8 +29,7 @@ class MayaExporter(object):
             # a file that comes up with only a wireframe (not even scene's default shader assigned) if shader=False
             # on export.
             shapes = mc.ls(nodes, shapes=True, long=True)
-            temp_shader_context = maya_context.TemporaryShaders(shapes, 'initialShadingGroup')
-            contexts.append(temp_shader_context)
+            contexts.append(maya_context.TemporaryShaders(shapes, 'initialShadingGroup'))
 
         if not displayLayers:
             # TODO: Test disabling displayLayers
@@ -50,7 +49,7 @@ class MayaExporter(object):
 
         with lib_context.ExitStack() as stack:
             for context in contexts:
-                stack.enter_context(contexts)
+                stack.enter_context(context)
 
             mc.select(nodes, r=1)
             return mc.file(path, force=True, options='v={0};'.format(int(verbose)), typ=typ,
