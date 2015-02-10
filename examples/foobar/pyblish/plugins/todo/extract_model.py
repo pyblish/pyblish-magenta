@@ -8,10 +8,22 @@ import pyblish_magenta.utils.lib.context as lib_context
 class MayaExporter(object):
     @staticmethod
     def export(path, nodes, preserveReferences=True, constructionHistory=True, expressions=True, channels=True,
-               constraints=True, displayLayers=True, renderLayers=True, objectSets=True, shader=True,
+               constraints=True, displayLayers=True, objectSets=True, shader=True,
                createFolder=True, includeChildren=True, typ='mayaAscii', verbose=False):
         """ An expanded Maya export function that also allows to temporarily disconnect shaders, displayLayers,
             renderLayers and objectSets so they will get skipped for exporting.
+
+            Before exporting we build a stack of Context managers that will perform a change in the Maya scene for the
+            duration of the export and then revert back to its previous state. It's assumed that the Context managers
+            are implemented in such a way that they don't leave any trace inside the scene. (The artist finds his/her
+            work scene unchanged after export).
+
+            .. note:: renderLayers are not implicitly exported with nodes out of Maya unless explicitly included
+                      in the nodes that must be exported. If you export nodes whilst being in non-default renderLayers
+                      any renderLayer overrides will be assigned to the nodes as if it's the default value. On the other
+                      hand when exporting from default render layer (masterLayer?) it seems to work upon import, until
+                      you switch to the layer with overrides and back to the masterLayer. Then the node will not revert
+                      to its non-overridden value in the imported scene.
         """
 
         directory = os.path.dirname(path)
@@ -35,9 +47,11 @@ class MayaExporter(object):
             # TODO: Test disabling displayLayers
             contexts.append(maya_context.TemporaryDisplayLayer(nodes, 'defaultLayer'))
 
-        if not renderLayers:
-            # TODO: Implement disabling renderLayers
-            raise NotImplementedError("Disabling renderLayers for export is not implemented yet.")
+        # if renderLayers:
+        #     # TODO: Implement enabling renderLayers?
+        #     # Workaround Maya bug for renderLayer overrides by temporarily switching to masterLayer?
+        #     # Is that expected behaviour?
+        #     raise NotImplementedError("Enabling renderLayers for export is not implemented yet.")
 
         if not objectSets:
             # TODO: Implement disabling objectSets
@@ -88,6 +102,6 @@ class ExtractModel(pyblish.api.Extractor):
 
         output = MayaExporter.export(export_nodes, preserveReferences=False, constructionHistory=False,
                                      expressions=False, channels=False, constraints=False, shader=False,
-                                     displayLayers=False, renderLayers=False, objectSets=False)
+                                     displayLayers=False, objectSets=False)
 
         self.log.info("Extracted instance '{0}' to: {1}".format(instance.name, path))
