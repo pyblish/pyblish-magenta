@@ -71,7 +71,10 @@ class MayaExporter(object):
 
             exclude_nodes = [node for node in all_children if node not in all_nodes_lookup]
             if exclude_nodes:
-                contexts.append(maya_context.TemporaryUnparent(exclude_nodes, preserve_order=True))
+                # We'll have to ensure autokeying is OFF, because otherwise Maya sometimes put keys on an object
+                # when it gets unparented.
+                contexts.append(maya_context.TemporaryAutoKeyframeState(False))
+                contexts.append(maya_context.TemporaryUnparent(exclude_nodes, preserve_order=True, relative=True))
         # endregion
 
         # Perform the export with the chosen contexts and settings

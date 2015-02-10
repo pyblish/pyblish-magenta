@@ -117,14 +117,20 @@ class TemporaryUnparent(object):
         .. note::
             Useful for exporting a hierarchy of nodes (from root node) while excluding these bastards.
 
+        .. warning::
+            Unparenting an object (especially when not in relative mode) can cause to create extra keys on an object
+            if Maya's auto keying mode is on. You could this Context together with the `TemporaryAutoKeyframeState` to
+            avoid that alltogether.
+
         :param nodes: list of objects to unparent
         :type nodes: list, tuple, set
     """
-    def __init__(self, nodes=(), preserve_order=True, temporary_parent=None):
+    def __init__(self, nodes=(), preserve_order=True, temporary_parent=None, relative=True):
 
         self.__unparent_nodes = nodes
         self.__preserve_order = preserve_order
         self.__temporary_parent = pymel.core.PyNode(temporary_parent) if temporary_parent else None
+        self.__relative = relative
 
         if self.__preserve_order:
             self.__dag_order = scene_utils.getDagOrder()
@@ -165,8 +171,8 @@ class TemporaryUnparent(object):
         if parent:
 
             if self.__temporary_parent is None:
-                node.setParent(world=True)
+                node.setParent(world=True, relative=self.__relative)
             else:
-                node.setParent(self.__temporary_parent)
+                node.setParent(self.__temporary_parent, relative=self.__relative)
 
             self._original_parents[node] = parent
