@@ -1,5 +1,13 @@
+# stdlib
+from collections import OrderedDict
+
+# local lib
 import pyblish_magenta.utils.maya.shaders as shader_utils
+import pyblish_magenta.utils.maya.scene as scene_utils
+
+# maya lib
 from maya import cmds
+import pymel.core
 
 
 class TemporaryShaders(object):
@@ -101,3 +109,64 @@ class TemporaryDisplayLayer(object):
         # Move all nodes back to original layers
         for layer, nodes in self._original_layer_relationships.iteritems():
             cmds.editDisplayLayerMembers(layer, nodes)
+
+
+class TemporaryUnparent(object):
+    """ Temporarily unparent the given nodes for the duration of this context.
+
+        .. note::
+            Useful for exporting a hierarchy of nodes (from root node) while excluding these bastards.
+
+        :param nodes: list of objects to unparent
+        :type nodes: list, tuple, set
+    """
+    def __init__(self, nodes=(), preserve_order=True, temporary_parent=None):
+
+        self.__unparent_nodes = nodes
+        self.__preserve_order = preserve_order
+        self.__temporary_parent = pymel.core.PyNode(temporary_parent) if temporary_parent else None
+
+        if self.__preserve_order:
+            self.__dag_order = scene_utils.getDagOrder()
+        self._original_parents = OrderedDict()
+
+    def __enter__(self):
+        for node in self.__unparent_nodes:
+            self.unparent(node)
+
+    def __exit__(self, type, value, traceback):
+        # First parent everything back
+        for node, parent in self._original_parents.iteritems():
+            node.setParent(parent)
+
+        # Assign the original index order in the list
+        # We do this in the order of the stored order
+        if self.__preserve_order:
+            for node, index in self.__dag_order.iteritems():
+                pyNode = pymel.core.PyNode(node)
+                if pyNode in self._original_parents:
+                    cmds.reorder(pyNode.fullPathName(), front=True)
+                    cmds.reorder(pyNode.fullPathName(), relative=index)
+
+    def unparent(self, node):
+        """ Unparents the node from where it is in the hierarchy and puts it under the temporary parent.
+            Then it adds it into the `original parents` dict for when it exits.
+        """
+        if not isinstance(node, pymel.core.PyNode):
+            node = pymel.core.PyNode(node)
+
+        if not isinstance(node, pymel.core.nodetypes.DagNode):
+            return
+
+        if pymel.core.objectType(node, isAType="shape"):
+            return
+
+        parent = node.getParent()
+        if parent:
+
+            if self.__temporary_parent is None:
+                node.setParent(world=True)
+            else:
+                node.setParent(self.__temporary_parent)
+
+            self._original_parents[node] = parent

@@ -8,7 +8,7 @@ import pyblish_magenta.utils.lib.context as lib_context
 class MayaExporter(object):
     @staticmethod
     def export(path, nodes, preserveReferences=True, constructionHistory=True, expressions=True, channels=True,
-               constraints=True, displayLayers=True, objectSets=True, shader=True,
+               constraints=True, displayLayers=True, objectSets=False, shader=True,
                createFolder=True, includeChildren=True, typ='mayaAscii', verbose=False):
         """ An expanded Maya export function that also allows to temporarily disconnect shaders, displayLayers,
             renderLayers and objectSets so they will get skipped for exporting.
@@ -33,6 +33,7 @@ class MayaExporter(object):
             else:
                 raise RuntimeError("Output directory does not exist: {0}".format(directory))
 
+        # region build contexts
         contexts = [maya_context.PreserveSelection()]
 
         if not shader:
@@ -49,24 +50,36 @@ class MayaExporter(object):
             contexts.append(maya_context.TemporaryDisplayLayer(nodes, 'defaultLayer'))
 
         # if renderLayers:
-        #     # TODO: Implement enabling renderLayers?
-        #     # Workaround Maya bug for renderLayer overrides by temporarily switching to masterLayer?
+        #     # TODO: Implement enabling renderLayers? Worth it? Too buggy anyway?
+        #     # Might need workaround for Maya bug for renderLayer overrides by temporarily switching to masterLayer?
         #     # Is that expected behaviour?
         #     raise NotImplementedError("Enabling renderLayers for export is not implemented yet.")
 
-        if not objectSets:
-            # TODO: Implement disabling objectSets
-            raise NotImplementedError("Disabling objectSets for export is not implemented yet.")
+        if objectSets:
+            # objectSets are not implicitly exported if not provided as part of the nodes list.
+            # Though if you include the objectSet explicitly (as part of the node list) all its members WILL get
+            # included in the export.
+            # TODO: Implement enabling exprt of connected objectSets (with only implicit members in the list)
+            raise NotImplementedError("Enabling objectSets for export is not implemented yet.")
 
         if not includeChildren:
-            # TODO: Implement disabling includeChildren
-            raise NotImplementedError("Disabling includeChildren for export is not implemented yet.")
+            # TODO: Test disabling includeChildren
+            # Unparent those nodes that are children of the export nodes who are not explicitly included in the export
+            # list. This way they will get skipped for the export.
+            all_nodes_lookup = set(mc.ls(nodes, long=True))     # ensure long names
+            all_children = mc.listRelatives(nodes, children=True, allDescendents=True, fullPath=True)
 
+            exclude_nodes = [node for node in all_children if node not in all_nodes_lookup]
+            if exclude_nodes:
+                contexts.append(maya_context.TemporaryUnparent(exclude_nodes, preserve_order=True))
+        # endregion
+
+        # Perform the export with the chosen contexts and settings
         with lib_context.ExitStack() as stack:
             for context in contexts:
                 stack.enter_context(context)
 
-            mc.select(nodes, r=1)
+            mc.select(nodes, r=1, noExpand=True)
             return mc.file(path, force=True, options='v={0};'.format(int(verbose)), typ=typ,
                            preserveReferences=preserveReferences,
                            exportSelected=True,

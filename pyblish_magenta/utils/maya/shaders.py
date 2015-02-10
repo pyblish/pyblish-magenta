@@ -1,5 +1,9 @@
-from maya import cmds
+# stdlib
 import itertools
+
+# maya lib
+from maya import cmds
+
 
 
 def get_shading_engines(nodes):
