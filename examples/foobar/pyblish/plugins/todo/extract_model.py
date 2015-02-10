@@ -39,7 +39,8 @@ class MayaExporter(object):
             # To exclude shaders from exporting we will temporarily assign the default shader as opposed to setting
             # the shader parameter to False on the `maya.cmds.file` command. This is because the maya command creates
             # a file that comes up with only a wireframe (not even scene's default shader assigned) if shader=False
-            # on export.
+            # on export. This is an annoying inconvenience; so instead we apply the default lambert1  before export and
+            # re-apply the current shader after export
             shapes = mc.ls(nodes, shapes=True, long=True)
             contexts.append(maya_context.TemporaryShaders(shapes, 'initialShadingGroup'))
 
@@ -90,15 +91,8 @@ class ExtractModel(pyblish.api.Extractor):
         workspace_root = mc.workspace(q=1, rootDirectory=True)
         publish_directory = os.path.join(workspace_root, 'published')
 
-        path = os.path.join(workspace_root, 'published', filename)
-
-        # We want to extract without any history and/or shaders.
-        # We can disable shaders with the file export; though upon import the mesh won't
-        # even receive the default lambert and gets imported without any default shader.
-        # This is an annoying inconvenience; so instead we apply the default lambert1
-        # before export and re-apply the current shader after export
+        path = os.path.join(publish_directory, filename)
         export_nodes = mc.ls(instance, long=True)
-        export_shapes = mc.ls(export_nodes, long=True, shapes=True)
 
         output = MayaExporter.export(export_nodes, preserveReferences=False, constructionHistory=False,
                                      expressions=False, channels=False, constraints=False, shader=False,
