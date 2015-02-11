@@ -1,13 +1,27 @@
-import pyblish.api
+# stdlib
 import os
+from collections import defaultdict
+import logging
+import contextlib
+
+# maya & pyblish lib
+import pyblish.api
 import maya.cmds as mc
+
+# local lib
 import pyblish_magenta.utils.maya.context as maya_context
-import pyblish_magenta.utils.lib.context as lib_context
+
+
+def get_all_parents(longName):
+    parents = longName.split("|")[1:-1]
+    return ['|{0}'.format('|'.join(parents[0:i+1])) for i in xrange(len(parents))]
 
 
 class MayaExporter(object):
+    log = logging.getLogger(__name__ + '.MayaExporter')
+
     @staticmethod
-    def export(path, nodes, preserveReferences=True, constructionHistory=True, expressions=True, channels=True,
+    def export(path, nodes=None, preserveReferences=True, constructionHistory=True, expressions=True, channels=True,
                constraints=True, displayLayers=True, objectSets=False, shader=True,
                createFolder=True, includeChildren=True, typ='mayaAscii', verbose=False):
         """ An expanded Maya export function that also allows to temporarily disconnect shaders, displayLayers,
@@ -25,6 +39,20 @@ class MayaExporter(object):
                       you switch to the layer with overrides and back to the masterLayer. Then the node will not revert
                       to its non-overridden value in the imported scene.
         """
+        # TODO: Allow explicit objectSets to be exported without its members by `expandObjectSets=False` parameter
+
+        # Ensure long names
+        if nodes is None:
+            nodes = mc.ls(sl=True, long=True)
+        else:
+            nodes = mc.ls(nodes, long=True)
+
+        # Get all parent nodes (by long name)
+        export_nodes = set()
+        export_nodes.update(nodes)
+        for node in nodes:
+            export_nodes.update(getAllParents(node))
+        nodes = list(export_nodes)
 
         directory = os.path.dirname(path)
         if not os.path.exists(directory):
@@ -46,7 +74,6 @@ class MayaExporter(object):
             contexts.append(maya_context.TemporaryShaders(shapes, 'initialShadingGroup'))
 
         if not displayLayers:
-            # TODO: Test disabling displayLayers
             contexts.append(maya_context.TemporaryDisplayLayer(nodes, 'defaultLayer'))
 
         # if renderLayers:
@@ -56,11 +83,30 @@ class MayaExporter(object):
         #     raise NotImplementedError("Enabling renderLayers for export is not implemented yet.")
 
         if objectSets:
+            # TODO: Test current implementation: enable export connected objectSets (with only implicit members in list)
+            # TODO: Add in preservation of nested objectSets (IF any of exported nodes is contained explicitly or implicitly)
             # objectSets are not implicitly exported if not provided as part of the nodes list.
             # Though if you include the objectSet explicitly (as part of the node list) all its members WILL get
             # included in the export.
-            # TODO: Implement enabling exprt of connected objectSets (with only implicit members in the list)
-            raise NotImplementedError("Enabling objectSets for export is not implemented yet.")
+
+            # Get the related object_sets and the explicit nodes that are contained within them
+            object_sets_relationships = defaultdict(set)
+            for node in nodes:
+                object_sets = mc.ls(mc.listSets(object=node), exactType='objectSet')
+                for object_set in object_sets:
+                    object_sets_relationships[object_set].add(node)
+
+            # Now we have our connected `implicit_object_sets`
+            implicit_object_sets = object_sets_relationships.keys()
+
+            # If one of the `implicit_object_sets` is already in the explicit `nodes` to export than we don't need to
+            # filter that objectSet. Then we will always allow Maya to take the full set of nodes.
+            for object_set in implicit_object_sets:
+                if object_set in nodes:
+                    del object_sets_relationships[object_set]
+
+            for object_set, object_set_nodes in object_sets_relationships.iteritems():
+                contexts.append(maya_context.TemporaryObjectSetSolo(object_set=object_set, nodes=object_set_nodes))
 
         if not includeChildren:
             # TODO: Test disabling includeChildren
@@ -78,12 +124,11 @@ class MayaExporter(object):
         # endregion
 
         # Perform the export with the chosen contexts and settings
-        with lib_context.ExitStack() as stack:
-            for context in contexts:
-                stack.enter_context(context)
+        output = None
+        with contextlib.nested(*contexts):
 
             mc.select(nodes, r=1, noExpand=True)
-            return mc.file(path, force=True, options='v={0};'.format(int(verbose)), typ=typ,
+            output = mc.file(path, force=True, options='v={0};'.format(int(verbose)), typ=typ,
                            preserveReferences=preserveReferences,
                            exportSelected=True,
                            constructionHistory=constructionHistory,
@@ -91,6 +136,10 @@ class MayaExporter(object):
                            channels=channels,
                            constraints=constraints,
                            shader=True)
+
+            MayaExporter.log.debug("Exported '%s' file to: %s", typ, output)
+
+        return output
 
 
 @pyblish.api.log

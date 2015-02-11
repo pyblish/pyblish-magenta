@@ -30,7 +30,7 @@ class TemporaryShaders(object):
         shader_utils.perform_shader_assignment(self.original_shader_assignment)
 
 
-class TemporaryUnit():
+class TemporaryUnit(object):
     """
         This context sets the Maya units to the given units for the duration of the Context.
     """
@@ -51,7 +51,7 @@ class PreserveSelection(object):
         This preserves the selection over this Context.
     """
     def __enter__(self):
-        self.originalSelection = cmds.ls(sl=1)
+        self.originalSelection = cmds.ls(sl=1, long=True)
 
     def __exit__(self, type, value, traceback):
         if self.originalSelection:
@@ -125,34 +125,42 @@ class TemporaryUnparent(object):
         :param nodes: list of objects to unparent
         :type nodes: list, tuple, set
     """
-    def __init__(self, nodes=(), preserve_order=True, temporary_parent=None, relative=True):
+    def __init__(self, nodes, preserve_order=True, temporary_parent=None, relative=True):
+
+        self.__preserve_order = preserve_order
+        if self.__preserve_order:
+            self.__dag_order = scene_utils.getDagOrder()
 
         self.__unparent_nodes = nodes
-        self.__preserve_order = preserve_order
         self.__temporary_parent = pymel.core.PyNode(temporary_parent) if temporary_parent else None
         self.__relative = relative
 
-        if self.__preserve_order:
-            self.__dag_order = scene_utils.getDagOrder()
         self._original_parents = OrderedDict()
+        self._original_names = {}
 
     def __enter__(self):
         for node in self.__unparent_nodes:
             self.unparent(node)
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, exc_type, exc_val, exc_tb):
         # First parent everything back
         for node, parent in self._original_parents.iteritems():
-            node.setParent(parent)
+            node.setParent(parent, relative=self.__relative)
+
+            # Rename back if node name has changed.
+            origName = self._original_names[node]
+            if node.nodeName() != origName:
+                node.rename(origName)
 
         # Assign the original index order in the list
         # We do this in the order of the stored order
         if self.__preserve_order:
             for node, index in self.__dag_order.iteritems():
+                print node, index
                 pyNode = pymel.core.PyNode(node)
                 if pyNode in self._original_parents:
-                    cmds.reorder(pyNode.fullPathName(), front=True)
-                    cmds.reorder(pyNode.fullPathName(), relative=index)
+                    cmds.reorder(pyNode.fullPath(), front=True)
+                    cmds.reorder(pyNode.fullPath(), relative=index)
 
     def unparent(self, node):
         """ Unparents the node from where it is in the hierarchy and puts it under the temporary parent.
@@ -168,11 +176,49 @@ class TemporaryUnparent(object):
             return
 
         parent = node.getParent()
-        if parent:
 
-            if self.__temporary_parent is None:
-                node.setParent(world=True, relative=self.__relative)
-            else:
-                node.setParent(self.__temporary_parent, relative=self.__relative)
-
+        if self.__temporary_parent != parent:
+            self._original_names[node] = node.nodeName()     # store name because it might change if not unique
             self._original_parents[node] = parent
+            node.setParent(self.__temporary_parent, relative=self.__relative)
+
+
+class TemporaryObjectSetSolo(object):
+    """
+        Temporarily removes all members in the objectSet and keeps only the given nodes in it.
+    """
+    def __init__(self, nodes, object_set, force_member=False):
+        """
+        :param nodes: The nodes to solo out in the set.
+        :param object_set: The object set to operate on.
+        :param force_member: If True adds the nodes to the object set whilst solo-ing even if not already a member.
+        """
+        self.__object_set = object_set
+        self.__nodes = pymel.core.ls(nodes)
+        self.__original_members = []
+        self.__force_member = force_member
+
+    def __enter__(self):
+        self.__original_members = cmds.sets(self.__object_set, q=1)
+
+        # define new members based on settings
+        new_members = self.__nodes
+        if not self.__force_member:
+            original_members_lookup = set(pymel.core.ls(self.__original_members))
+            new_members = self.__nodes if self.__force_member else \
+                          [node for node in self.__nodes if node in original_members_lookup]
+
+        # remove all members
+        cmds.sets(self.__original_members, e=True, remove=self.__object_set)
+
+        # add new members
+        cmds.sets(new_members, e=True, forceElement=self.__object_set)
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+
+        # remove all members
+        current_members = cmds.sets(self.__object_set, q=1)
+        cmds.sets(current_members, e=True, remove=self.__object_set)
+
+        # add original members
+        cmds.sets(self.__original_members, e=True, forceElement=self.__object_set)
