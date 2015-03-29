@@ -5,25 +5,22 @@ from maya import cmds
 class ValidateDisplayLayerEmpty(pyblish.api.Validator):
     """ Validate there are no empty displayLayers in the scene.
 
-        .. warning::
-            At this point this does not use instances from the Context.
-            Yet it's a scene wide Validation.
+        .. note::
+            This is a scene wide validation.
 
         .. note::
             This filters out checking the display layers that exist by default in Maya
             and are mostly hidden to the end user.
     """
-    families = ['modeling']
+    families = ['model']
     hosts = ['maya']
     category = 'scene'
     version = (0, 1, 0)
 
     __skip_layers = ['defaultLayer']
 
-    def process_instance(self, instance):
-        """ Warning: Does not use the Context/Instance at all, but is scene-wide.
-                     This also means it will repeat the exact same validation for ALL instances.
-        """
+    def process_context(self, context):
+        """ Process the Context """
         invalid = []
         layers = cmds.ls(type='displayLayer')
 

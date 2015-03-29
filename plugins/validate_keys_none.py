@@ -12,6 +12,9 @@ class ValidateKeysNone(pyblish.api.Validator):
 
     def process_instance(self, instance):
         """Process all the nodes in the instance """
+        if not instance:
+            # Maya's keyframe command errors out on an empty list so we return if not anything in the instance.
+            return
 
         # quick check
         any_keys = cmds.keyframe(instance, q=1, selected=False)

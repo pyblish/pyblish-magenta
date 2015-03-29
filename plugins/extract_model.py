@@ -51,8 +51,11 @@ class MayaExporter(object):
         export_nodes = set()
         export_nodes.update(nodes)
         for node in nodes:
-            export_nodes.update(getAllParents(node))
+            export_nodes.update(get_all_parents(node))
         nodes = list(export_nodes)
+
+        if not nodes:
+            raise RuntimeError("Nothing to export")
 
         directory = os.path.dirname(path)
         if not os.path.exists(directory):
@@ -84,7 +87,7 @@ class MayaExporter(object):
 
         if objectSets:
             # TODO: Test current implementation: enable export connected objectSets (with only implicit members in list)
-            # TODO: Add in preservation of nested objectSets (IF any of exported nodes is contained explicitly or implicitly)
+            # TODO: Add preservation of nested objectSets (IF any of exported nodes is contained explicitly or implicitly)
             # objectSets are not implicitly exported if not provided as part of the nodes list.
             # Though if you include the objectSet explicitly (as part of the node list) all its members WILL get
             # included in the export.
@@ -109,7 +112,6 @@ class MayaExporter(object):
                 contexts.append(maya_context.TemporaryObjectSetSolo(object_set=object_set, nodes=object_set_nodes))
 
         if not includeChildren:
-            # TODO: Test disabling includeChildren
             # Unparent those nodes that are children of the export nodes who are not explicitly included in the export
             # list. This way they will get skipped for the export.
             all_nodes_lookup = set(mc.ls(nodes, long=True))     # ensure long names
@@ -127,6 +129,9 @@ class MayaExporter(object):
         output = None
         with contextlib.nested(*contexts):
 
+            if not nodes:
+                raise RuntimeError("Nothing to export")
+
             mc.select(nodes, r=1, noExpand=True)
             output = mc.file(path, force=True, options='v={0};'.format(int(verbose)), typ=typ,
                            preserveReferences=preserveReferences,
@@ -137,7 +142,8 @@ class MayaExporter(object):
                            constraints=constraints,
                            shader=True)
 
-            MayaExporter.log.debug("Exported '%s' file to: %s", typ, output)
+            if verbose:
+                MayaExporter.log.debug("Exported '%s' file to: %s", typ, output)
 
         return output
 
@@ -154,12 +160,21 @@ class ExtractModel(pyblish.api.Extractor):
 
         filename = "{0}.ma".format(instance.name)
         workspace_root = mc.workspace(q=1, rootDirectory=True)
-        publish_directory = os.path.join(workspace_root, 'published')
 
-        path = os.path.join(publish_directory, filename)
+        path = os.path.join(instance.data('project_root'),
+                            'asset',
+                            'model',
+                            instance.data('asset_parent_hierarchy'),
+                            instance.data('asset_name'),
+                            'model',
+                            filename)
+
         export_nodes = mc.ls(instance, long=True)
 
-        output = MayaExporter.export(export_nodes, preserveReferences=False, constructionHistory=False,
+        if not export_nodes:
+            raise RuntimeError("Nothing to export")
+
+        output = MayaExporter.export(path, export_nodes, preserveReferences=False, constructionHistory=False,
                                      expressions=False, channels=False, constraints=False, shader=False,
                                      displayLayers=False, objectSets=False)
 

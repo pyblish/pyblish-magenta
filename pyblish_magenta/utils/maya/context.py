@@ -7,6 +7,7 @@ import pyblish_magenta.utils.maya.scene as scene_utils
 
 # maya lib
 from maya import cmds
+import maya.mel
 import pymel.core
 
 
@@ -222,3 +223,45 @@ class TemporaryObjectSetSolo(object):
 
         # add original members
         cmds.sets(self.__original_members, e=True, forceElement=self.__object_set)
+
+
+class TemporaryDisableMaya(object):
+    """ Disables all Maya windows and panels to speed up things
+        that require updating the time within the script.
+
+        Windows are disabled by minimizing them.
+    """
+    DEFAULT_WINDOWS = ['MayaWindow', 'CommandWindow']
+
+    def __init__(self):
+        self.gMainPane = maya.mel.eval('$tmp = $gMainPane;')
+        self.stored_window_states = {}
+
+    def __set_main_state(self, state):
+        cmds.paneLayout(self.gMainPane, e=1, m=state)
+
+    def revert_to_state(self, state):
+        self.__setMainState(state)
+
+        for window, state in self.stored_window_states.iteritems():
+            if cmds.window(window, q=1, exists=1):
+                cmds.window(window, e=True, i=state)
+
+    def set_state(self, state, store_state=True):
+        self.__setMainState(state)
+
+        # set window states
+        windows = cmds.lsUI(type='window')
+        for window in windows:
+            if window not in self.DEFAULT_WINDOWS:
+                if cmds.window(window, q=1, exists=1):
+                    if store_state:
+                        current_state = cmds.window(window, q=True, i=True)
+                        self.stored_window_states[window] = current_state
+                    cmds.window(window, e=1, i=not state)
+
+    def __enter__(self):
+        self.set_state(False)
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.revert_to_state(True)

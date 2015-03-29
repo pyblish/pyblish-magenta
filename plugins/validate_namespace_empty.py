@@ -5,9 +5,8 @@ from maya import cmds
 class ValidateNamespaceEmpty(pyblish.api.Validator):
     """ Validate there are no empty namespaces in the scene.
 
-        .. warning::
-            At this point this does not use instances from the Context.
-            Yet it's a scene wide Validation.
+        .. note::
+            This is a scene wide validation.
 
         .. note::
             This filters out checking the internal namespaces ['UI', 'shared'] that exist by default
@@ -16,7 +15,7 @@ class ValidateNamespaceEmpty(pyblish.api.Validator):
             Even though it's likely a bit slower the benefit is that it's automatically maintained and
             updated for future releases so might automatically get new internal namespaces added to it.
     """
-    families = ['modeling']
+    families = ['model']
     hosts = ['maya']
     category = 'scene'
     version = (0, 1, 0)
@@ -24,10 +23,8 @@ class ValidateNamespaceEmpty(pyblish.api.Validator):
     __internal_namespaces = ['UI', 'shared']
     __root_namespace = ':'
 
-    def process_instance(self, instance):
-        """ Warning: Does not use the Context/Instance at all, but is scene-wide.
-                     This also means it will repeat the exact same validation for ALL instances.
-        """
+    def process_context(self, context):
+        """ Process the Context """
         all_namespaces = cmds.namespaceInfo(self.__root_namespace, listOnlyNamespaces=True, recurse=True)
         non_internal_namespaces = [ns for ns in all_namespaces if ns not in self.__internal_namespaces]
 

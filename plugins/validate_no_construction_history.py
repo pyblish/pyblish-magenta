@@ -11,6 +11,9 @@ class ValidateNoConstructionHistory(pyblish.api.Validator):
 
     def process_instance(self, instance):
         """Process all the nodes in the instance """
+        if not instance:
+            # Maya's listHistory errors out on an empty list so we return if not anything in the instance.
+            return
 
         # quick check first
         if not cmds.listHistory(instance, pruneDagObjects=True):
