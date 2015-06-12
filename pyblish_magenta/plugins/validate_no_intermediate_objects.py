@@ -9,13 +9,13 @@ class ValidateNoIntermediateObjects(pyblish.api.Validator):
     category = 'geometry'
     version = (0, 1, 0)
 
-    def process_instance(self, instance):
+    def process(self, instance):
         """ Process all the intermediateObject nodes in the instance """
         intermediate_objects = cmds.ls(instance, intermediateObjects=True, long=True)
         if intermediate_objects:
             raise ValueError("Intermediate objects found: {0}".format(intermediate_objects))
                 
-    def repair_instance(self, instance):
+    def repair(self, instance):
         """ Delete all intermediateObjects """
         intermediate_objects = cmds.ls(instance, intermediateObjects=True, long=True)
         if intermediate_objects:

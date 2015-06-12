@@ -2,11 +2,11 @@ import pyblish.api
 import maya.cmds as cmds
 
 
-def getNamespace(nodeName):
-    # ensure only nodename
-    nodeName = nodeName.rsplit("|")[-1]
+def get_namespace(node_name):
+    # ensure only node's name (not parent path)
+    node_name = node_name.rsplit("|")[-1]
     # ensure only namespace
-    return nodeName.rpartition(":")[0]
+    return node_name.rpartition(":")[0]
 
 
 class ValidateNoNamespace(pyblish.api.Validator):
@@ -16,21 +16,22 @@ class ValidateNoNamespace(pyblish.api.Validator):
     category = 'cleanup'
     version = (0, 1, 0)
 
-    def process_instance(self, instance):
+    def process(self, instance):
         """Process all the nodes in the instance """
         nodes = cmds.ls(instance, long=True)
         
         invalid = []
         for node in nodes:
-            if getNamespace(node):
+            if get_namespace(node):
                 invalid.append(node)
                 
         if invalid:
             raise ValueError("Namespaces found: {0}".format(invalid))
                 
-    def repair_instance(self, instance):
+    def repair(self, instance):
         """ Remove all namespaces from the nodes in the instance """
-        # Get nodes with pymel since we'll be renaming them (and we don't want keep checking/sorting hierarchy/fullpaths)
+        # Get nodes with pymel since we'll be renaming them
+        # Since we don't want to keep checking/sorting the hierarchy/fullpaths
         import pymel.core as pm
         nodes = pm.ls(instance)
 

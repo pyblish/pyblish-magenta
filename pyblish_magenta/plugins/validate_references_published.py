@@ -1,25 +1,8 @@
-import pyblish.api
-from maya import cmds
 import os
 
-
-def is_subdir(path, root_dir):
-    """ Returns whether path is a subdirectory (or file) within root_dir """
-    path = os.path.realpath(path)
-    root_dir = os.path.realpath(root_dir)
-
-    # If not on same drive
-    if os.path.splitdrive(path)[0] != os.path.splitdrive(root_dir)[0]:
-        return False
-
-    # Get 'relative path' (can contain ../ which means going up)
-    relative = os.path.relpath(path, root_dir)
-
-    # Check if the path starts by going up, if so it's not a subdirectory. :)
-    if relative.startswith(os.pardir) or relative == os.curdir:
-        return False
-    else:
-        return True
+import pyblish.api
+from maya import cmds
+from pyblish_magenta.utils.path import is_subdir
 
 
 class ValidateReferencesPublished(pyblish.api.Validator):
@@ -34,7 +17,7 @@ class ValidateReferencesPublished(pyblish.api.Validator):
     optional = False
     version = (0, 1, 0)
 
-    def process_instance(self, instance):
+    def process(self, instance):
         """Process all the nodes in the instance 'objectSet' """
         member_nodes = cmds.sets(instance.name, q=1)
         

@@ -1,29 +1,11 @@
 from maya import cmds
 import pyblish.api
-import os
+
+import pyblish_magenta.schema
 
 
-def is_subdir(path, root_dir):
-    """ Returns whether path is a subdirectory (or file) within root_dir """
-    path = os.path.realpath(path)
-    root_dir = os.path.realpath(root_dir)
-
-    # If not on same drive
-    if os.path.splitdrive(path)[0] != os.path.splitdrive(root_dir)[0]:
-        return False
-
-    # Get 'relative path' (can contain ../ which means going up)
-    relative = os.path.relpath(path, root_dir)
-
-    # Check if the path starts by going up, if so it's not a subdirectory. :)
-    if relative.startswith(os.pardir) or relative == os.curdir:
-        return False
-    else:
-        return True
-
-
-def getAllParents(longName):
-    parents = longName.split("|")[1:-1]
+def get_all_parents(long_name):
+    parents = long_name.split("|")[1:-1]
     return ['|{0}'.format('|'.join(parents[0:i+1])) for i in xrange(len(parents))]
 
 
@@ -35,21 +17,14 @@ class SelectModelInstance(pyblish.api.Selector):
     """
     hosts = ["maya"]
 
-    def process_context(self, context):
+    def process(self, context):
+        self.log.info("Selecting model..")
 
-        """
-        current_file = cmds.file(q=1, sceneName=True)
-        family = utilities.family_from_path(current_file)
-
-        if family != 'model':
-            return
-
-        asset = utilities.asset_from_path(current_file)
-        """
-
-        # must be a saved file and within a project root Directory
-        project_root = cmds.workspace(q=1, rootDirectory=True)
-        if not project_root:
+        # File Path
+        # ---------
+        # Must be a saved file and within a project root directory
+        root = cmds.workspace(q=1, rootDirectory=True).rstrip("/")
+        if not root:
             # this never happens?
             self.log.error("No workspace has been set.")
             return
@@ -60,26 +35,26 @@ class SelectModelInstance(pyblish.api.Selector):
             self.log.error("Scene has not been saved.")
             return
 
-        # must be inside the dev modeling folder
-        modeling_root = os.path.join(project_root, 'dev', 'modeling')
-        if not is_subdir(scene_name, modeling_root):
-            # not in modeling
-            return
+        # Parse with schema
+        schema = pyblish_magenta.schema.load()
+        data = schema.get("model.dev").parse(scene_name)
+        asset = data['asset']
+        container = data['container']
 
-        # Get the asset's information
-        asset_source = scene_name
-        asset_root = os.path.dirname(os.path.dirname(scene_name))
-        asset_name = os.path.basename(asset_root)
-        asset_parent_hierarchy = os.path.dirname(asset_root[len(modeling_root):]).strip('/\\')
+        if not root == data['root']:
+            raise RuntimeError("Parsed root doesn't match with current project root: {0} != {1}".format(data['root'],
+                                                                                                        root))
 
-        # get the root transform
-        root_transform = cmds.ls('|{assetName}_GRP'.format(assetName=asset_name), objectsOnly=True, type='transform')
+        # Scene Geometry
+        # --------------
+        # Get the root transform
+        root_transform = cmds.ls('|{asset}_GRP'.format(asset=asset), objectsOnly=True, type='transform')
         if not root_transform:
             return
         else:
             root_transform = root_transform[0]
 
-        # get all children shapes (because we're modeling we only care about shapes)
+        # Get all children shapes (because we're modeling we only care about shapes)
         shapes = cmds.ls(root_transform, dag=True, shapes=True, long=True, noIntermediate=True)
         if not shapes:
             return
@@ -88,17 +63,18 @@ class SelectModelInstance(pyblish.api.Selector):
         nodes = set()
         nodes.update(shapes)
         for shape in shapes:
-            nodes.update(getAllParents(shape))
+            nodes.update(get_all_parents(shape))
 
-        instance = context.create_instance(name=asset_name)
-        instance.set_data("family", "model")
+        # Create Asset
+        # ------------
+        instance = context.create_instance(name=asset,
+                                           family='model')
         for node in nodes:
             instance.add(node)
 
         # Set Pipeline data
-        instance.set_data("project_root", project_root)
-        instance.set_data("asset_source", asset_source)
-        instance.set_data("asset_name", asset_name)
-        instance.set_data("asset_parent_hierarchy", asset_parent_hierarchy)
-        instance.set_data("workspace", 'modeling')
+        instance.set_data("root", root)
+        instance.set_data("source_file", scene_name)
+        instance.set_data("asset", asset)
+        instance.set_data("container", container)
 

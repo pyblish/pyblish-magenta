@@ -1,6 +1,5 @@
 import pyblish.api
 from maya import cmds
-import re
 
 
 SUFFIX_NAMING_TABLE = {'mesh': ["_GEO", "_GES", "_GEP"],    # Geometry, GeometrySmooth, GeometryProxy
@@ -36,7 +35,7 @@ class ValidateTransformNamingSuffix(pyblish.api.Validator):
                     return True
             return False
 
-    def process_instance(self, instance):
+    def process(self, instance):
         """Process all the nodes in the instance """
         transforms = cmds.ls(instance, type='transform', long=True)
 

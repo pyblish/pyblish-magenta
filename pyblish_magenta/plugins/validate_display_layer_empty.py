@@ -19,7 +19,7 @@ class ValidateDisplayLayerEmpty(pyblish.api.Validator):
 
     __skip_layers = ['defaultLayer']
 
-    def process_context(self, context):
+    def process(self, context):
         """ Process the Context """
         invalid = []
         layers = cmds.ls(type='displayLayer')

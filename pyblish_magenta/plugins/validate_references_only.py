@@ -10,7 +10,7 @@ class ValidateReferencesOnly(pyblish.api.Validator):
     optional = True
     version = (0, 1, 0)
 
-    def process_instance(self, instance):
+    def process(self, instance):
         """Process all the nodes in the instance """
         referenced_nodes = cmds.ls(instance, referencedNodes=True, long=True)
 
@@ -25,8 +25,8 @@ class ValidateReferencesOnly(pyblish.api.Validator):
                 raise ValueError("Non-referenced nodes found: {0}".format(non_referenced_nodes))
 
         # Another way of doing it (which might be slower (untested))
-        #invalid = []
-        #for node in member_nodes:
+        # invalid = []
+        # for node in member_nodes:
         #    if not cmds.referenceQuery(isNodeReferenced=node):
         #        invalid.append(node)
 

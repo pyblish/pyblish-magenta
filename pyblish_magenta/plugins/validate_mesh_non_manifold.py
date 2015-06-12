@@ -9,7 +9,7 @@ class ValidateMeshNonManifold(pyblish.api.Validator):
     category = 'geometry'
     version = (0, 1, 0)
 
-    def process_instance(self, instance):
+    def process(self, instance):
         """Process all the nodes in the instance 'objectSet' """
         meshes = cmds.ls(instance, type='mesh', long=True)
 

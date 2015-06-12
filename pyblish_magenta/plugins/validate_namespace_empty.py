@@ -23,13 +23,13 @@ class ValidateNamespaceEmpty(pyblish.api.Validator):
     __internal_namespaces = ['UI', 'shared']
     __root_namespace = ':'
 
-    def process_context(self, context):
+    def process(self, context):
         """ Process the Context """
         all_namespaces = cmds.namespaceInfo(self.__root_namespace, listOnlyNamespaces=True, recurse=True)
         non_internal_namespaces = [ns for ns in all_namespaces if ns not in self.__internal_namespaces]
 
         invalid = []
-        # TODO: Check whether currently considers a namespace with another namespace in it (both empty) to be empty.
+        # TODO: Check whether currently a namespace with another namespace in it (both empty) is considered as empty.
         for namespace in non_internal_namespaces:
             namespace_content = cmds.namespaceInfo(namespace, listNamespace=True, recurse=True)
             if not namespace_content:

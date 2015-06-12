@@ -2,7 +2,7 @@ import pyblish.api
 from maya import cmds
 
 
-def getRootNode(longPath):
+def get_root_node(longPath):
     return '|' + longPath.lstrip('|').split("|", 1)[0]
 
 
@@ -13,14 +13,14 @@ class ValidateSingleRootTransform(pyblish.api.Validator):
     category = 'rig'
     version = (0, 1, 0)
 
-    def process_instance(self, instance):
+    def process(self, instance):
         """Process all the nodes in the instance """
         # ensure long names so we can get root by strings (fastest way?)
         member_nodes_paths = cmds.ls(instance, type='dagNode', long=True)
 
         roots = set()
         for node in member_nodes_paths:
-            root = getRootNode(node)
+            root = get_root_node(node)
             roots.add(root)
 
         if len(roots) > 1:

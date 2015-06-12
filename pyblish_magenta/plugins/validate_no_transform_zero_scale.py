@@ -21,7 +21,7 @@ class ValidateNoTransformZeroScale(pyblish.api.Validator):
 
     __epsilon = 1e-5
 
-    def process_instance(self, instance):
+    def process(self, instance):
         """Process all the nodes in the instance """
         transforms = cmds.ls(instance, type='transform')
 

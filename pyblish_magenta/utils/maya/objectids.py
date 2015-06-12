@@ -1,18 +1,13 @@
 """ WIP; need to move more stuff over and clean it up """
+import logging
 
 import maya.cmds as mc
 import maya.api.OpenMaya as om2
 
 
-ATTRIBUTES = {'name': 'cbAssetName',
-              'parent_hierarchy' :'cbAssetParentHierarchy',
-              'object_id': 'cbAssetObjectId',
-              'source': 'cbFullPath',
-              'project_root': 'cbFullPath',
-              'workspace': 'cbWorkspace',
-              'shader_variation': 'cbShaderVariation'}
-# Reverse mapping
-ATTRIBUTES_REV = dict((y, x) for x, y in ATTRIBUTES.items())
+log = logging.getLogger(__name__)
+
+
 
 
 def __list_id_keys():
@@ -25,7 +20,7 @@ def __list_id_keys():
             'object_id']
 
 
-def define_scene_id(path=None):
+def define_asset_id(path=None):
     """
         Define the asset information for the current scene
         :return: Scene ID
@@ -43,18 +38,18 @@ def define_scene_id(path=None):
     return id
 
 
-def define_node_id(node, scene_id=None):
+def define_node_id(node, asset_id=None):
     """
         Define the asset information for the given node. (not based on stored attributes, but as new unique identifier)
         :return: Scene ID
         :rtype: dict
     """
-    if scene_id is None:
-        scene_id = define_scene_id()
+    if asset_id is None:
+        asset_id = define_asset_id()
 
     # Make copy of scene_id
     id = {}
-    id.update(scene_id)
+    id.update(asset_id)
 
     # Add object id data
     id[ATTRIBUTES['object_id']] = mc.ls(node, long=True)[0]   # long name
@@ -73,11 +68,11 @@ def create(nodes, allow_update=True):
     if not isinstance(nodes, (tuple, list)):
         nodes = [nodes]
 
-    scene_id = define_scene_id()
+    asset_id = define_asset_id()
 
     id = {}
     for node in nodes:
-        node_id = define_node_id(node, scene_id=scene_id)
+        node_id = define_node_id(node, asset_id=asset_id)
         assign(node, node_id, allow_update=allow_update)
         result.append(node_id)
 
@@ -122,20 +117,31 @@ def remove(nodes):
                 mc.deleteAttr(node_attr)
 
 
-def assign(node, id=None, allow_update=True):
-
+def assign(node, id=None, allow_update=True, verbose=True):
+    assert isinstance(id, dict)
     for key, value in id.iteritems():
-        attr_name = ATTRIBUTES[key]
-        if not
 
+        # Remap key to correct attr_name
+        attr_name = ATTRIBUTES.get(key, None)
+        if attr_name is None:
+            if verbose:
+                log.warning("Key is not in attributes map: '{0}'. Node: {1}".format(key, node))
+            attr_name = key
 
-    # TODO: Move and clean implementation from CB
-    raise NotImplementedError()
+        node_attr = '{0}.{1]'.format(node, attr_name)
+        attr_exists = mc.objExists(node_attr)
+
+        # create attribute if not exists
+        if not attr_exists:
+            mc.addAttr(node, dt='string', ln=attr_name, keyable=True)
+
+        # set the value (update only if allow_update)
+        if not attr_exists or allow_update:
+            mc.setAttr(node_attr, value, type='string')
 
 
 def list_similar(nodes=None, **kwargs):
     """
         List all nodes in the scene with similar object ids.
     """
-    # TODO: Move and clean implementation from CB
-    raise NotImplementedError()
+    raise NotImplementedError() # TODO: Move and clean implementation from CB
