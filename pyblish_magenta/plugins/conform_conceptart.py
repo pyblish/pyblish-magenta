@@ -2,6 +2,7 @@ import os
 import shutil
 
 import pyblish.api
+import pyblish_magenta.schema
 
 
 @pyblish.api.log
@@ -19,13 +20,21 @@ class ConformConceptArt(pyblish.api.Conformer):
         # in  = thedeal/dev/conceptArt/characters/ben/ben_model.png
         # out = thedeal/asset/model/characters/ben/conceptArt
         input_path = instance.data("path")
-        root = repeat(5, os.path.dirname, input_path)
-        output_path = os.path.join(root,
-                                   "asset",
-                                   "model",
-                                   "characters",
-                                   "ben",
-                                   "conceptArt")
+
+        self.log.info("Conforming %s" % input_path)
+        self.log.info("Assuming environment variable: PROJECTROOT")
+
+        assert "PROJECTROOT" in os.environ, "Missing environment variable \"PROJECTROOT\""
+
+        schema = pyblish_magenta.schema.load()
+        data, template = schema.parse(input_path)
+
+        self.log.info("Schema successfully parsed")
+        new_name = template.name.replace('dev', 'asset')
+        asset_template = schema.get_template(new_name)
+        output_path = asset_template.format(data)
+        self.log.info("Output path successfully generated: %s" % output_path)
+
         self.log.info("Conforming %s to %s" %
                       (instance, "..." + output_path[-35:]))
 
@@ -38,10 +47,3 @@ class ConformConceptArt(pyblish.api.Conformer):
             raise pyblish.api.ConformError("Could not conform %s" % instance)
         else:
             self.log.info("Successfully conformed %s!" % instance)
-
-
-def repeat (n, f, x):
-    for i in range(n):
-        x = f(x)
-    return x
-

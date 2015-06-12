@@ -1,7 +1,6 @@
 import os
 import pyblish.api
 
-
 @pyblish.api.log
 class SelectConceptArt(pyblish.api.Selector):
   def process(self, context):
