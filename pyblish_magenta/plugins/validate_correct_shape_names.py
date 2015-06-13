@@ -1,9 +1,10 @@
-import pyblish.api
-from maya import cmds
 import re
 
+import pyblish.api
+from maya import cmds
 
-def shortName(node):
+
+def short_name(node):
     return node.rsplit("|", 1)[-1].rsplit(":", 1)[-1]
 
 
@@ -30,7 +31,7 @@ class ValidateCorrectShapeNames(pyblish.api.Validator):
     optional = True
     version = (0, 1, 0)
 
-    def process_instance(self, instance):
+    def process(self, instance):
         """Process all the shape nodes in the instance """
         shapes = cmds.ls(instance, shapes=True, long=True)
 
@@ -38,8 +39,8 @@ class ValidateCorrectShapeNames(pyblish.api.Validator):
         for shape in shapes:
             transform = cmds.listRelatives(shape, parent=True, fullPath=True)[0]
 
-            transform_name = shortName(transform)
-            shape_name = shortName(shape)
+            transform_name = short_name(transform)
+            shape_name = short_name(shape)
 
             # A Shape's name can be either {transform}{numSuffix}Shape or {transform}Shape{numSuffix}
             # Upon renaming nodes in Maya that is the pattern Maya will act towards.

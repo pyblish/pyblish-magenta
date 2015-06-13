@@ -12,7 +12,7 @@ class ValidateSceneDimensions(pyblish.api.Validator):
 
     __far = 1e5  # what we consider the far distance
 
-    def process_instance(self, instance):
+    def process(self, instance):
         """Process all the nodes in the instance """
         # TODO: Maybe swap transform type with dagNode type?
         transforms = cmds.ls(instance, type='transform', long=True)

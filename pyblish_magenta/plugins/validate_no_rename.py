@@ -1,9 +1,10 @@
-import pyblish.api
-from maya import cmds
 import re
 
+import pyblish.api
+from maya import cmds
 
-def shortName(node):
+
+def short_name(node):
     return node.rsplit("|", 1)[-1].rsplit(":", 1)[-1]
 
 
@@ -24,13 +25,13 @@ class ValidateNoRename(pyblish.api.Validator):
                          'nurbsPlane', 'nurbsTorus', 'nurbsCircle', 'nurbsSquare'])
     __simpleNamesRegex = [re.compile('{0}[0-9]?$'.format(x)) for x in __simpleNames]
 
-    def process_instance(self, instance):
+    def process(self, instance):
         """Process all the nodes in the instance 'objectSet' """
         transforms = cmds.ls(instance, type='transform')
         
         invalid = []
         for t in transforms:
-            t_shortName = shortName(t)
+            t_shortName = short_name(t)
             for regex in self.__simpleNamesRegex:
                 if regex.match(t_shortName):
                     invalid.append(t)

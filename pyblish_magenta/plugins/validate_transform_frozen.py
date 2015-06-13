@@ -23,7 +23,7 @@ class ValidateTransformFrozen(pyblish.api.Validator):
                   0.0, 0.0, 1.0, 0.0,
                   0.0, 0.0, 0.0, 1.0]
 
-    def process_instance(self, instance):
+    def process(self, instance):
         """Process all the nodes in the instance 'objectSet' """
         transforms = cmds.ls(instance, type='transform')
 

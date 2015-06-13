@@ -11,16 +11,16 @@ class ValidateShapeRenderStats(pyblish.api.Validator):
     version = (0, 1, 0)
 
     __renderStats = {'castsShadows': 1,
-                    'receiveShadows': 1,
-                    'motionBlur': 1,
-                    'primaryVisibility': 1,
-                    'smoothShading': 1,
-                    'visibleInReflections': 1,
-                    'visibleInRefractions': 1,
-                    'doubleSided': 1,
-                    'opposite': 0}
+                     'receiveShadows': 1,
+                     'motionBlur': 1,
+                     'primaryVisibility': 1,
+                     'smoothShading': 1,
+                     'visibleInReflections': 1,
+                     'visibleInRefractions': 1,
+                     'doubleSided': 1,
+                     'opposite': 0}
 
-    def process_instance(self, instance):
+    def process(self, instance):
         # I think it's the `surfaceShape` and those derived from it that have renderStat attributes.
         shapes = cmds.ls(instance, long=True, type='surfaceShape')
         invalid = []

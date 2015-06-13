@@ -21,7 +21,7 @@ class ValidateReferencesNoFailedEdits(pyblish.api.Validator):
     optional = True
     version = (0, 1, 0)
 
-    def process_instance(self, instance):
+    def process(self, instance):
         """Process all the nodes in the instance """
         referenced_nodes = cmds.ls(instance, referencedNodes=True, long=True)
         if not referenced_nodes:

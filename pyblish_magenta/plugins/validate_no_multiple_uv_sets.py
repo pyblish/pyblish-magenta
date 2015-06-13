@@ -9,7 +9,7 @@ class ValidateNoMultipleUVSets(pyblish.api.Validator):
     category = 'uv'
     version = (0, 1, 0)
 
-    def process_instance(self, instance):
+    def process(self, instance):
         """Process all the nodes in the instance 'objectSet' """
         meshes = cmds.ls(instance, type='mesh', long=True)
 
@@ -21,7 +21,7 @@ class ValidateNoMultipleUVSets(pyblish.api.Validator):
         if invalid:
             raise ValueError("Nodes found with multiple UV sets: {0}".format(invalid))
                 
-    def repair_instance(self, instance):
+    def repair(self, instance):
         """ Keep only current UV set and ensure it's the default 'map1' """
         meshes = cmds.ls(instance, type='mesh', long=True)
         for mesh in meshes:
