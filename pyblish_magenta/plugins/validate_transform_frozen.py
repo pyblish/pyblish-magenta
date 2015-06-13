@@ -11,7 +11,6 @@ class ValidateTransformFrozen(pyblish.api.Validator):
         .. note::
             This will also catch camera transforms if those are in the instances.
     """
-    # TODO: Check if this suffer from floating point precision errors. If so we need to implement a set tolerance.
 
     families = ['model']
     hosts = ['maya']
@@ -22,6 +21,7 @@ class ValidateTransformFrozen(pyblish.api.Validator):
                   0.0, 1.0, 0.0, 0.0,
                   0.0, 0.0, 1.0, 0.0,
                   0.0, 0.0, 0.0, 1.0]
+    __tolerance = 1e-30
 
     def process(self, instance):
         """Process all the nodes in the instance 'objectSet' """
@@ -30,7 +30,7 @@ class ValidateTransformFrozen(pyblish.api.Validator):
         invalid = []
         for transform in transforms:
             mat = cmds.xform(transform, q=1, matrix=True, objectSpace=True)
-            if self.__identity != mat:
+            if not all(abs(x-y) < self.__tolerance for x, y in zip(self.__identity, mat)):
                 invalid.append(transform)
 
         if invalid:
