@@ -1,4 +1,4 @@
-á# stdlib
+# stdlib
 import os
 
 # maya & pyblish lib
