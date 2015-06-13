@@ -265,3 +265,43 @@ class TemporaryDisableMaya(object):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.revert_to_state(True)
+
+
+class TemporarySmoothPreviewSimple(object):
+
+    _enabled_state = {'divisionsU': 3, 'divisionsV': 3, 'pointsWire': 16, 'pointsShaded': 4, 'polygonObject': 3}
+    _disabled_state = {'divisionsU': 0, 'divisionsV': 0, 'pointsWire': 4, 'pointsShaded': 1, 'polygonObject': 1}
+
+    def __get_state(self, node):
+
+        result = {}
+        for key, default_value in self._disabled_state.iteritems():
+            value = cmds.displaySmoothness(node, **{'query': True, key: True})  # returns a list or None
+            result[key] = value[0] if value is not None else default_value
+
+        return result
+
+    def __init__(self, nodes, state):
+        self._nodes = nodes
+        self._state = state
+        self.stored_node_states = {}
+
+    def __enter__(self):
+        # Store the original states
+        self.stored_node_states.clear()
+        for node in self._nodes:
+            self.stored_node_states[node] = self.__get_state(node)
+
+        # Set the states for the context
+        if self._state:
+            cmds.displaySmoothness(self._nodes, **self._enabled_state)
+        else:
+            cmds.displaySmoothness(self._nodes, **self._disabled_state)
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        # Restore the original states
+        for node, state in self.stored_node_states.iteritems():
+            cmds.displaySmoothness(node, **state)
+
+
+

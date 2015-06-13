@@ -41,6 +41,7 @@ class ExtractModel(pyblish.api.Extractor):
                             preserveReferences=False, constructionHistory=False,
                             expressions=False, channels=False,
                             constraints=False, shader=False,
-                            displayLayers=False, objectSets=False)
+                            displayLayers=False, objectSets=False,
+                            smoothPreview=False)
 
         self.log.info("Extracted instance '{0}' to: {1}".format(instance.name, path))
