@@ -15,6 +15,7 @@ class ExtractModel(pyblish.api.Extractor):
     """ Exports all nodes """
     hosts = ["maya"]
     families = ["model"]
+    optional = True
 
     def process(self, instance):
 
