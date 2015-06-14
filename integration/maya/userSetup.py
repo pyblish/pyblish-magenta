@@ -12,13 +12,15 @@ except ImportError as e:
 # Set project
 development_dir = os.environ.get("DEVELOPMENTDIR")
 
-if os.name == "nt":
-    # MEL can't handle backslash
-    development_dir = development_dir.replace("\\", "/")
-
 if development_dir:
     maya_dir = os.path.join(development_dir, "maya")
+
+    if os.name == "nt":
+        # MEL can't handle backslash
+        maya_dir = maya_dir.replace("\\", "/")
+
     if not os.path.exists(maya_dir):
         os.makedirs(maya_dir)
+
     print("Setting Magenta development directory to: %s" % maya_dir)
     mel.eval('setProject \"' + maya_dir + '\"')
