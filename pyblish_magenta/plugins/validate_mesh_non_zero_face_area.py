@@ -27,7 +27,7 @@ class ValidateMeshNonZeroFaceArea(pyblish.api.Validator):
         # Get all faces
         faces = ['{0}.f[*]'.format(node) for node in meshes]
 
-        # Filter by constraint on edge length
+        # Filter by constraint on face area
         invalid = mesh_utils.polyConstraint(faces,
                                             disable=True,  # Disable previous settings, use only current
                                             t=0x0008,      # type: 0x0008(face)

@@ -1,3 +1,5 @@
+import os.path
+
 from maya import cmds
 import pyblish.api
 
@@ -41,7 +43,7 @@ class SelectModelInstance(pyblish.api.Selector):
         asset = data['asset']
         container = data['container']
 
-        if not root == data['root']:
+        if not os.path.normpath(root) == os.path.normpath(data['root']):
             raise RuntimeError("Parsed root doesn't match with current project root: {0} != {1}".format(data['root'],
                                                                                                         root))
 
