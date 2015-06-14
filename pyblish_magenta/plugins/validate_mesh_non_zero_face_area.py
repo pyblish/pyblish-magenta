@@ -7,9 +7,12 @@ import pyblish_magenta.utils.maya.mesh as mesh_utils
 class ValidateMeshNonZeroFaceArea(pyblish.api.Validator):
     """ Validate meshes don't have zero area faces.
 
-        .. note:: This can be slow for high-res meshes.
+    .. note:: This can be slow for high-res meshes.
 
-        Also see: http://help.autodesk.com/view/MAYAUL/2015/ENU/?guid=Mesh__Cleanup """
+    Also see: http://help.autodesk.com/view/MAYAUL/2015/ENU/?guid=Mesh__Cleanup
+
+    Check is based on Maya's polyCleanup *'Faces with zero geometry area'* script.
+    """
     families = ['model']
     hosts = ['maya']
     category = 'geometry'
