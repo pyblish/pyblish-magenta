@@ -17,5 +17,8 @@ if os.name == "nt":
     development_dir = development_dir.replace("\\", "/")
 
 if development_dir:
-    print("Setting Magenta development directory to: %s" % development_dir)
-    mel.eval('setProject \"' + development_dir + '\"')
+    maya_dir = os.path.join(development_dir, "maya")
+    if not os.path.exists(maya_dir):
+        os.makedirs(maya_dir)
+    print("Setting Magenta development directory to: %s" % maya_dir)
+    mel.eval('setProject \"' + maya_dir + '\"')
