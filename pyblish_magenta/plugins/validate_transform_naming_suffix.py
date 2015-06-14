@@ -2,7 +2,8 @@ import pyblish.api
 from maya import cmds
 
 
-SUFFIX_NAMING_TABLE = {'mesh': ["_GEO", "_GES", "_GEP"],    # Geometry, GeometrySmooth, GeometryProxy
+SUFFIX_NAMING_TABLE = {'mesh': ["_GEO"],                    # Geometry
+                       # 'mesh': ["_GEO", "_GES", "_GEP"],   # (Disabled/Old) Geometry, GeometrySmooth, GeometryProxy
                        'nurbsCurve': ["_CRV"],              # Curve
                        'nurbsSurface': ["_NRB"],            # Nurbs
                        None: ['_GRP']}                      # Transform with no shapes: group
