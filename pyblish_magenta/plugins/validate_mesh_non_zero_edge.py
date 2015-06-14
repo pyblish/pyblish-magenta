@@ -34,5 +34,3 @@ class ValidateMeshNonZeroEdges(pyblish.api.Validator):
 
         if invalid:
             raise RuntimeError("Meshes found with zero edge length: {0}".format(invalid))
-
-        raise RuntimeError("test")

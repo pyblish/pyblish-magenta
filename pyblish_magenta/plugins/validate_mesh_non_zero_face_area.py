@@ -36,5 +36,3 @@ class ValidateMeshNonZeroFaceArea(pyblish.api.Validator):
 
         if invalid:
             raise RuntimeError("Meshes found with zero face areas: {0}".format(invalid))
-
-        raise RuntimeError("test")
