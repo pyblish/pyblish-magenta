@@ -304,4 +304,21 @@ class TemporarySmoothPreviewSimple(object):
             cmds.displaySmoothness(node, **state)
 
 
+class TemporaryPolySelectConstraint(object):
+    def __init__(self, *args, **kwargs):
+        self._args = args
+        self._kwargs = kwargs
+        self._stored_state = None
 
+    def __enter__(self):
+        # Store current state
+        self._stored_state = cmds.polySelectConstraint(query=True, stateString=True)
+        # Set the new state
+        cmds.polySelectConstraint(*self._args, **self._kwargs)
+
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+
+        # Restore the original poly select constraint
+        if self._stored_state:
+            maya.mel.eval(self._stored_state)
