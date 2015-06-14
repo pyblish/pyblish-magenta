@@ -241,14 +241,14 @@ class TemporaryDisableMaya(object):
         cmds.paneLayout(self.gMainPane, e=1, m=state)
 
     def revert_to_state(self, state):
-        self.__setMainState(state)
+        self.__set_main_state(state)
 
         for window, state in self.stored_window_states.iteritems():
             if cmds.window(window, q=1, exists=1):
                 cmds.window(window, e=True, i=state)
 
     def set_state(self, state, store_state=True):
-        self.__setMainState(state)
+        self.__set_main_state(state)
 
         # set window states
         windows = cmds.lsUI(type='window')
