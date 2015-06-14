@@ -316,9 +316,33 @@ class TemporaryPolySelectConstraint(object):
         # Set the new state
         cmds.polySelectConstraint(*self._args, **self._kwargs)
 
-
     def __exit__(self, exc_type, exc_val, exc_tb):
 
         # Restore the original poly select constraint
         if self._stored_state:
             maya.mel.eval(self._stored_state)
+
+
+class UndoChunk(object):
+    def __init__(self, name='UndoChunk'):
+        self._name = name
+
+    def __enter__(self):
+        cmds.undoInfo(openChunk=True)
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        cmds.undoInfo(closeChunk=True)
+
+
+class NoUndo(object):
+    def __init__(self, flush=True):
+        self._original_state = True
+        self._state_keyword = 'state' if flush else 'stateWithoutFlush'
+
+    def __enter__(self):
+        self._original_state = cmds.undoInfo(q=1, state=1)
+
+        cmds.undoInfo(**{self._state_keyword: False})
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        cmds.undoInfo(**{self._state_keyword: True})

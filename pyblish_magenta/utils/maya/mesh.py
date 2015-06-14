@@ -1,4 +1,4 @@
-from .context import TemporaryPolySelectConstraint, PreserveSelection
+from .context import TemporaryPolySelectConstraint, PreserveSelection, NoUndo
 from maya import cmds
 
 
@@ -11,13 +11,16 @@ def polyConstraint(components, *args, **kwargs):
     :param components: List of components of polygon meshes
     :return: The list of components filtered by the given constraints.
     """
-    with PreserveSelection():
-        cmds.select(components, r=1)
+    kwargs.pop('mode', None)
 
-        # Apply filter (and use context manager to set the polySelectConstraint settings only for this duration)
-        with TemporaryPolySelectConstraint(*args,
-                                           mode=3,  # All and Next so it applies to the selection just made.
-                                           **kwargs):
-            result = cmds.ls(sl=1)
+    with NoUndo(flush=False):
+        with PreserveSelection():
+            cmds.select(components, r=1)
+
+            # Apply filter (and use context manager to set the polySelectConstraint settings only for this duration)
+            with TemporaryPolySelectConstraint(*args,
+                                               mode=3,  # All and Next so it applies to the selection just made.
+                                               **kwargs):
+                result = cmds.ls(sl=1)
 
     return result
