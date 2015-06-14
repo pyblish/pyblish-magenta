@@ -345,4 +345,4 @@ class NoUndo(object):
         cmds.undoInfo(**{self._state_keyword: False})
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        cmds.undoInfo(**{self._state_keyword: True})
+        cmds.undoInfo(**{self._state_keyword: self._original_state})
