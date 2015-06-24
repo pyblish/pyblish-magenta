@@ -1,4 +1,5 @@
 import os
+import shutil
 
 import pyblish.api
 import pyblish_magenta
@@ -84,10 +85,18 @@ class ExtractReview(pyblish.api.Extractor):
         if format == 'image':
             # Append sub-directory for image-sequence
             path = os.path.join(path, camera)
+        else:
+            path = path + ".mov"
+
+        if os.path.isfile(path):
+            os.remove(path)
+
+        if os.path.isdir(path):
+            shutil.rmtree(path)
 
         self.log.info("Outputting to %s" % path)
 
-        capture.capture(
+        output = capture.capture(
             camera=camera,
             width=width,
             height=height,
@@ -101,3 +110,5 @@ class ExtractReview(pyblish.api.Extractor):
             maintain_aspect_ratio=maintain_aspect_ratio,
             viewport_options=view_opts,
             camera_options=cam_opts)
+        
+        instance.set_data("outputPath", output)
