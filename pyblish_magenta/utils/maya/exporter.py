@@ -22,7 +22,8 @@ class MayaExporter(object):
     @staticmethod
     def export(path, nodes=None, preserveReferences=True, constructionHistory=True, expressions=True, channels=True,
                constraints=True, displayLayers=True, objectSets=False, shader=True,
-               createFolder=True, includeChildren=True, typ='mayaAscii', verbose=False):
+               createFolder=True, includeChildren=True, smoothPreview=None,
+               typ='mayaAscii', verbose=False):
         """ An expanded Maya export function that also allows to temporarily disconnect shaders, displayLayers,
             renderLayers and objectSets so they will get skipped for exporting.
 
@@ -122,6 +123,10 @@ class MayaExporter(object):
                 # when it gets unparented.
                 contexts.append(maya_context.TemporaryAutoKeyframeState(False))
                 contexts.append(maya_context.TemporaryUnparent(exclude_nodes, preserve_order=True, relative=True))
+
+        if smoothPreview is not None:
+            state = bool(smoothPreview)
+            contexts.append(maya_context.TemporarySmoothPreviewSimple(nodes, state))
         # endregion
 
         # Perform the export with the chosen contexts and settings

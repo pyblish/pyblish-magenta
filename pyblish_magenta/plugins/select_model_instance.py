@@ -1,3 +1,5 @@
+import os.path
+
 from maya import cmds
 import pyblish.api
 
@@ -22,13 +24,6 @@ class SelectModelInstance(pyblish.api.Selector):
 
         # File Path
         # ---------
-        # Must be a saved file and within a project root directory
-        root = cmds.workspace(q=1, rootDirectory=True).rstrip("/")
-        if not root:
-            # this never happens?
-            self.log.error("No workspace has been set.")
-            return
-
         scene_name = cmds.file(q=1, sceneName=True)
         if not scene_name:
             # file not saved
@@ -38,12 +33,9 @@ class SelectModelInstance(pyblish.api.Selector):
         # Parse with schema
         schema = pyblish_magenta.schema.load()
         data = schema.get("model.dev").parse(scene_name)
+        root = data['root']
         asset = data['asset']
         container = data['container']
-
-        if not root == data['root']:
-            raise RuntimeError("Parsed root doesn't match with current project root: {0} != {1}".format(data['root'],
-                                                                                                        root))
 
         # Scene Geometry
         # --------------
