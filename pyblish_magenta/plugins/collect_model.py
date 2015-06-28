@@ -1,9 +1,5 @@
-import os.path
-
 from maya import cmds
 import pyblish.api
-
-import pyblish_magenta.schema
 
 
 def get_all_parents(long_name):
@@ -12,30 +8,30 @@ def get_all_parents(long_name):
 
 
 @pyblish.api.log
-class SelectModelInstance(pyblish.api.Selector):
+class CollectModel(pyblish.api.Collector):
     """ Inject all models from the scene into the context (if in modeling workspace)
 
         .. note:: This skips intermediate objects.
     """
+    order = pyblish.api.Collector.order + 0.2
     hosts = ["maya"]
 
     def process(self, context):
         self.log.info("Selecting model..")
 
-        # File Path
-        # ---------
-        scene_name = cmds.file(q=1, sceneName=True)
-        if not scene_name:
-            # file not saved
-            self.log.error("Scene has not been saved.")
+        # Check whether to select a model
+        # -------------------------------
+        # Ensure we're in the modeling context
+        family_id = context.data('familyId')
+        if not family_id or family_id != 'model':
             return
 
-        # Parse with schema
-        schema = pyblish_magenta.schema.load()
-        data = schema.get("model.dev").parse(scene_name)
-        root = data['root']
-        asset = data['asset']
-        container = data['container']
+        # Get the root, asset and container information and ensure data is there.
+        root = context.data('root')
+        asset = context.data('asset')
+        container = context.data('container')
+        if any(not x for x in [root, asset, container]):
+            return
 
         # Scene Geometry
         # --------------
@@ -64,9 +60,9 @@ class SelectModelInstance(pyblish.api.Selector):
         for node in nodes:
             instance.add(node)
 
-        # Set Pipeline data
+        # Set instance pipeline data
         instance.set_data("root", root)
-        instance.set_data("source_file", scene_name)
+        instance.set_data("workFile", context.data('workFile'))
         instance.set_data("asset", asset)
         instance.set_data("container", container)
 
