@@ -1,14 +1,14 @@
+import pyblish.api
+
 from maya import cmds
 from maya import mel
-import pyblish.api
 
 
 @pyblish.api.log
-class SelectMayaUnits(pyblish.api.Selector):
-    """ Select Maya's scene units. """
-    order = pyblish.api.Selector.order + 0.1
+class CollectMayaUnits(pyblish.api.Selector):
+    """ Collect Maya's scene units. """
+    order = pyblish.api.Selector.order
     hosts = ["maya"]
-    families = ['model', 'rig', 'anim', 'layout']
 
     def process(self, context):
 
