@@ -7,11 +7,11 @@ import maya.cmds as mc
 
 # local lib
 from pyblish_magenta.utils.maya.exporter import MayaExporter
-import pyblish_magenta.schema
+import pyblish_magenta.plugin
 
 
 @pyblish.api.log
-class ExtractModel(pyblish.api.Extractor):
+class ExtractModel(pyblish_magenta.plugin.Extractor):
     """ Exports all nodes """
     hosts = ["maya"]
     families = ["model"]
@@ -19,25 +19,17 @@ class ExtractModel(pyblish.api.Extractor):
 
     def process(self, instance):
 
-        # Get instance data
-        data = {'root': instance.data('root'),
-                'container': instance.data('container'),
-                'asset': instance.data('asset')}
-
-        # Get output directory
-        schema = pyblish_magenta.schema.load()
-        dir_path = schema.get("model.asset").format(data)
-
-        # Get output filename
+        # Define extract output file path
+        dir_path = self.temp_dir(instance)
         filename = "{0}.ma".format(instance.name)
-
         path = os.path.join(dir_path, filename)
 
+        # Define extract nodes
         export_nodes = mc.ls(instance, long=True)
-
         if not export_nodes:
             raise RuntimeError("Nothing to export")
 
+        # Perform extraction
         MayaExporter.export(path, export_nodes,
                             preserveReferences=False, constructionHistory=False,
                             expressions=False, channels=False,

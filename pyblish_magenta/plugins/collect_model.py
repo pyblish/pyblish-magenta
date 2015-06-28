@@ -1,5 +1,6 @@
-from maya import cmds
 import pyblish.api
+
+from maya import cmds
 
 
 def get_all_parents(long_name):
@@ -30,7 +31,7 @@ class CollectModel(pyblish.api.Collector):
         root = context.data('root')
         asset = context.data('asset')
         container = context.data('container')
-        if any(not x for x in [root, asset, container]):
+        if not all([root, asset, container]):
             return
 
         # Scene Geometry
@@ -56,6 +57,7 @@ class CollectModel(pyblish.api.Collector):
         # Create Asset
         # ------------
         instance = context.create_instance(name=asset,
+                                           familyId=family_id,
                                            family='model')
         for node in nodes:
             instance.add(node)
