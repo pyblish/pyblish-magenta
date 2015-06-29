@@ -6,7 +6,8 @@ from maya import mel
 
 @pyblish.api.log
 class CollectMayaUnits(pyblish.api.Selector):
-    """ Collect Maya's scene units. """
+    """Collect Maya's scene units."""
+
     order = pyblish.api.Selector.order
     hosts = ["maya"]
 
@@ -19,8 +20,9 @@ class CollectMayaUnits(pyblish.api.Selector):
         units_angle = cmds.currentUnit(q=1, angle=1)
 
         # Get the current time units
-        # Using the mel command is simpler than using `mc.currentUnit(q=1, time=1)`
-        # Otherwise we have to parse the returned string value to FPS
+        # Using the mel command is simpler than using
+        # `mc.currentUnit(q=1, time=1)`. Otherwise we
+        # have to parse the returned string value to FPS
         fps = mel.eval('currentTimeUnitToFPS()')
 
         context.set_data('units', units)

@@ -10,14 +10,15 @@ def get_namespace(node_name):
 
 
 class ValidateNoNamespace(pyblish.api.Validator):
-    """Ensure the nodes don't have a namespace """
+    """Ensure the nodes don't have a namespace"""
+
     families = ['model']
     hosts = ['maya']
     category = 'cleanup'
     version = (0, 1, 0)
 
     def process(self, instance):
-        """Process all the nodes in the instance """
+        """Process all the nodes in the instance"""
         nodes = cmds.ls(instance, long=True)
         
         invalid = []
@@ -29,7 +30,7 @@ class ValidateNoNamespace(pyblish.api.Validator):
             raise ValueError("Namespaces found: {0}".format(invalid))
                 
     def repair(self, instance):
-        """ Remove all namespaces from the nodes in the instance """
+        """Remove all namespaces from the nodes in the instance"""
         # Get nodes with pymel since we'll be renaming them
         # Since we don't want to keep checking/sorting the hierarchy/fullpaths
         import pymel.core as pm
