@@ -40,15 +40,18 @@ class Integrator(pyblish.api.Integrator):
 
     def integrate(self, instance):
 
+        # Get the extracted directory
         extract_dir = instance.data('extractDir')
         if not extract_dir:
-            raise pyblish.api.ConformError("Cannot integrate if no `commitDir`"
-                                           " temporary directory found.")
+            raise pyblish.api.ConformError("Cannot integrate if no `extractDir` "
+                                           "temporary directory found.")
 
+        # Define the integrate directory
         integrate_dir = self.compute_integrate_dir(instance)
+        instance.set_data('integrateDir', value=integrate_dir)
 
+        # Copy the files/directories from extract directory to the integrate directory
         self.log.info("Integrating extracted files for '{0}'..".format(instance))
-
         if os.path.isdir(integrate_dir):
             self.log.info("Existing directory found, merging..")
             for fname in os.listdir(extract_dir):
@@ -58,9 +61,6 @@ class Integrator(pyblish.api.Integrator):
         else:
             self.log.info("No existing directory found, creating..")
             shutil.copytree(extract_dir, integrate_dir)
-
-        # Persist path of commit within instance
-        instance.set_data('integrateDir', value=integrate_dir)
 
         self.log.info("Integrated to directory '{0}'".format(integrate_dir))
 
