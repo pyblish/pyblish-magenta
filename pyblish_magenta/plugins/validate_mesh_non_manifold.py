@@ -3,14 +3,15 @@ from maya import cmds
 
 
 class ValidateMeshNonManifold(pyblish.api.Validator):
-    """ Validate meshes don't have non-manifold edges or vertices """
+    """Ensure that meshes don't have non-manifold edges or vertices"""
+
     families = ['model']
     hosts = ['maya']
     category = 'geometry'
     version = (0, 1, 0)
 
     def process(self, instance):
-        """Process all the nodes in the instance 'objectSet' """
+        """Process all the nodes in the instance 'objectSet'"""
         meshes = cmds.ls(instance, type='mesh', long=True)
 
         invalid = []

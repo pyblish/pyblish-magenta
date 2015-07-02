@@ -3,14 +3,15 @@ from maya import cmds
 
 
 class ValidateNoMultipleUVSets(pyblish.api.Validator):
-    """ Ensure no multiple UV sets exist for each polygon mesh """
+    """Ensure no multiple UV sets exist for each polygon mesh"""
+
     families = ['model']
     hosts = ['maya']
     category = 'uv'
     version = (0, 1, 0)
 
     def process(self, instance):
-        """Process all the nodes in the instance 'objectSet' """
+        """Process all the nodes in the instance 'objectSet'"""
         meshes = cmds.ls(instance, type='mesh', long=True)
 
         invalid = []
@@ -22,7 +23,7 @@ class ValidateNoMultipleUVSets(pyblish.api.Validator):
             raise ValueError("Nodes found with multiple UV sets: {0}".format(invalid))
                 
     def repair(self, instance):
-        """ Keep only current UV set and ensure it's the default 'map1' """
+        """Keep only current UV set and ensure it's the default 'map1'"""
         meshes = cmds.ls(instance, type='mesh', long=True)
         for mesh in meshes:
             uvSets = cmds.polyUVSet(mesh, query=True, allUVSets=True)

@@ -4,13 +4,15 @@ import pyblish.api
 
 @pyblish.api.log
 class ValidateMeshHasUVs(pyblish.api.Validator):
-    """ Validate the current mesh has UVs.
+    """Validate the current mesh has UVs.
 
     It validates whether the current UV set has non-zero UVs and
     at leat more than the vertex count. It's not really bulletproof,
     but a simple quick validation to check if there are likely
     UVs for every face.
+
     """
+
     families = ['model']
     hosts = ['maya']
     category = 'geometry'

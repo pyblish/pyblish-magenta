@@ -23,11 +23,14 @@ def has_shape_children(node):
 
 class ValidateNoNullTransforms(pyblish.api.Validator):
     """Ensure no null transforms are in the scene.
-       We will consider transforms with only intermediate objects under it to be null transform as well. 
-       
-       .. note:: `listRelatives()` has a noIntermediate parameter; though it doesn't do anything
-                 when used together with the children parameter, but only with shapes=True)
+
+   We will consider transforms with only intermediate objects under it to be null transform as well. 
+   
+   .. note:: `listRelatives()` has a noIntermediate parameter; though it doesn't do anything
+             when used together with the children parameter, but only with shapes=True)
+
     """
+
     families = ['model']
     hosts = ['maya']
     category = 'cleanup'
@@ -46,9 +49,10 @@ class ValidateNoNullTransforms(pyblish.api.Validator):
             raise ValueError("Empty transforms found: {0}".format(invalid))
                 
     def repair(self, instance):
-        """ Delete all null transforms.
+        """Delete all null transforms.
 
-            Note: If the node is used elsewhere (eg. connection to attributes or in history) deletion might mess up things.
+        Note: If the node is used elsewhere (eg. connection to attributes or in history) deletion might mess up things.
+
         """
         
         member_nodes = cmds.sets(instance.name, q=1)

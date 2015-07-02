@@ -5,12 +5,14 @@ import pyblish_magenta.utils.maya.mesh as mesh_utils
 
 
 class ValidateMeshNonZeroEdges(pyblish.api.Validator):
-    """ Validate meshes don't have edges with a zero length.
+    """Validate meshes don't have edges with a zero length.
 
     Also see: http://help.autodesk.com/view/MAYAUL/2015/ENU/?guid=Mesh__Cleanup
 
     Check is based on Maya's polyCleanup *'Edges with zero length'* script.
+
     """
+
     families = ['model']
     hosts = ['maya']
     category = 'geometry'
@@ -19,7 +21,7 @@ class ValidateMeshNonZeroEdges(pyblish.api.Validator):
     __tolerance = 1e-5
 
     def process(self, instance):
-        """Process all the nodes in the instance 'objectSet' """
+        """Process all the nodes in the instance 'objectSet'"""
         meshes = cmds.ls(instance, type='mesh', dag=True, long=True)
 
         # Get all edges

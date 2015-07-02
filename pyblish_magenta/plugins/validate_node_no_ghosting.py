@@ -3,7 +3,7 @@ from maya import cmds
 
 
 class ValidateNodeNoGhosting(pyblish.api.Validator):
-    """ Ensure nodes do not have ghosting enabled.
+    """Ensure nodes do not have ghosting enabled.
 
     .. note::
         If one would publish towards a non-Maya format it's likely that stats like ghosting won't be exported,
@@ -11,7 +11,9 @@ class ValidateNodeNoGhosting(pyblish.api.Validator):
 
         Instead of creating many micro-managing checks to ensure attributes have not been changed from their default
         it could be more efficient to export to a format that will never hold such data anyway.
+
     """
+
     families = ['model']
     hosts = ['maya']
     category = 'model'

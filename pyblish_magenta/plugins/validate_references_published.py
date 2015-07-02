@@ -10,7 +10,9 @@ class ValidateReferencesPublished(pyblish.api.Validator):
         
        Note: The 'published' location can hugely differ per pipeline.
              But this will give a good example on how to go about an implementation.
+
     """
+
     families = ['layout']
     hosts = ['maya']
     category = 'layout'
@@ -18,7 +20,8 @@ class ValidateReferencesPublished(pyblish.api.Validator):
     version = (0, 1, 0)
 
     def process(self, instance):
-        """Process all the nodes in the instance 'objectSet' """
+        """Process all the nodes in the instance 'objectSet'"""
+
         member_nodes = cmds.sets(instance.name, q=1)
         
         # Note: cmds.ls(referencedNodes=True) is only available in newer versions of Maya (2011+?)

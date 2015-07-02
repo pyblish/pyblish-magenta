@@ -3,7 +3,7 @@ import pyblish.api
 
 @pyblish.api.log
 class ValidateUnits(pyblish.api.Validator):
-    """ Validate the scene linear, angular and time units. """
+    """Validate the scene linear, angular and time units."""
 
     def process(self, context):
         units = context.data('units')
