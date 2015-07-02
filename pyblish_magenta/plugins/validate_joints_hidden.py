@@ -3,7 +3,8 @@ from maya import cmds
 
 
 def isVisible(node, displayLayer=True, intermediateObject=True, parentHidden=True, visibility=True):
-    """
+    """Is `node` visible?
+
     Returns whether a node is hidden by one of the following methods (if parameter is True):
     - The node exists (always checked)
     - The node must be a dagNode (always checked)
@@ -16,7 +17,9 @@ def isVisible(node, displayLayer=True, intermediateObject=True, parentHidden=Tru
 
     :return: Whether the node is visible in the scene
     :rtype: bool
+
     """
+
     # Only existing objects can be visible
     if not cmds.objExists(node):
         return False
@@ -50,18 +53,20 @@ def isVisible(node, displayLayer=True, intermediateObject=True, parentHidden=Tru
 
 
 class ValidateJointsHidden(pyblish.api.Validator):
-    """ Validate all joints are hidden.
+    """Validate all joints are hidden.
 
-        .. note::
-            We don't count a disabled displayLayer for the joints as hidden joints.
+    .. note::
+        We don't count a disabled displayLayer for the joints as hidden joints.
+
     """
+
     families = ['rig']
     hosts = ['maya']
     category = 'rig'
     version = (0, 1, 0)
 
     def process_instance(self, instance):
-        """Process all the nodes in the instance 'objectSet' """
+        """Process all the nodes in the instance 'objectSet'"""
         joints = cmds.ls(instance, type='joint', long=True)
 
         invalid = []

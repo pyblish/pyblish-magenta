@@ -3,13 +3,14 @@ from maya import cmds
 
 
 class ValidateTransformFrozen(pyblish.api.Validator):
-    """ Validate all transforms are freeze transformed by checking for objectSpace identity matrix.
+    """Validate all transforms are freeze transformed by checking for objectSpace identity matrix.
 
-        This is the same as checking:
-        - translate == [0, 0, 0] and rotate == [0, 0, 0] and scale == [1, 1, 1] and shear == [0, 0, 0]
+    This is the same as checking:
+    - translate == [0, 0, 0] and rotate == [0, 0, 0] and scale == [1, 1, 1] and shear == [0, 0, 0]
 
-        .. note::
-            This will also catch camera transforms if those are in the instances.
+    .. note::
+        This will also catch camera transforms if those are in the instances.
+
     """
 
     families = ['model']

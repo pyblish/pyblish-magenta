@@ -3,7 +3,7 @@ from maya import cmds
 
 
 class ValidateShapeRenderStats(pyblish.api.Validator):
-    """Ensure all render stats are set to the default values. """
+    """Ensure all render stats are set to the default values."""
     families = ['model']
     hosts = ['maya']
     category = 'model'

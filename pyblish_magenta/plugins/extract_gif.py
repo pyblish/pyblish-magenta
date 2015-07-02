@@ -20,13 +20,17 @@ class ExtractGif(pyblish.api.Extractor):
         fps = context.data("fps") or 24
         width = context.data("width") or 512
 
-        generate_palette = ("ffmpeg -y -i {input} -vf "
-                            "\"fps={fps},scale={width}:-1:flags=lanczos,palettegen\" "
-                            "{palette}")
+        generate_palette = (
+            "ffmpeg -y -i {input} -vf "
+            "\"fps={fps},scale={width}:-1:flags=lanczos,palettegen\" "
+            "{palette}")
 
-        generate_gif = ("ffmpeg -y -i {input} -i {palette} -filter_complex "
-                        "\"fps={fps},scale={width}:-1:flags=lanczos[x];[x][1:v]paletteuse\" "
-                        "{output}")
+        generate_gif = (
+            "ffmpeg -y -i {input} -i {palette} -filter_complex "
+            "\"fps={fps},scale={width}:-1:flags=lanczos[x];"
+            "[x][1:v]paletteuse\" "
+            "{output}")
+
         try:
             tempdir = tempfile.mkdtemp()
             palette = os.path.join(tempdir, "palette.png")

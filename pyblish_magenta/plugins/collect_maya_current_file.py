@@ -24,4 +24,3 @@ class CollectMayaCurrentFile(pyblish.api.Collector):
         current_file = os.path.normpath(current_file)
 
         context.set_data('workFile', value=current_file)
-

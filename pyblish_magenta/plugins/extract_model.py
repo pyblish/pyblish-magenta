@@ -12,7 +12,8 @@ import pyblish_magenta.plugin
 
 @pyblish.api.log
 class ExtractModel(pyblish_magenta.plugin.Extractor):
-    """ Exports all nodes """
+    """Exports all nodes"""
+
     hosts = ["maya"]
     families = ["model"]
     optional = True
@@ -31,10 +32,12 @@ class ExtractModel(pyblish_magenta.plugin.Extractor):
 
         # Perform extraction
         MayaExporter.export(path, export_nodes,
-                            preserveReferences=False, constructionHistory=False,
+                            preserveReferences=False,
+                            constructionHistory=False,
                             expressions=False, channels=False,
                             constraints=False, shader=False,
                             displayLayers=False, objectSets=False,
                             smoothPreview=False)
 
-        self.log.info("Extracted instance '{0}' to: {1}".format(instance.name, path))
+        self.log.info("Extracted instance '{0}' to: {1}".format(
+            instance.name, path))

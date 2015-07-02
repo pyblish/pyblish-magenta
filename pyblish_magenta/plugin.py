@@ -1,7 +1,6 @@
 import os
 import shutil
 import tempfile
-import contextlib
 
 import pyblish.api
 import pyblish_magenta.schema
@@ -29,7 +28,8 @@ class Integrator(pyblish.api.Integrator):
         family_id = instance.data('familyId')
 
         if not family_id:
-            raise pyblish.api.ConformError("No family id found on instance. Can't resolve asset path.")
+            raise pyblish.api.ConformError(
+                "No family id found on instance. Can't resolve asset path.")
 
         # Get asset directory
         schema = pyblish_magenta.schema.load()

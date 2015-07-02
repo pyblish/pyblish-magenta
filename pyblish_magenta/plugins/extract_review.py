@@ -1,15 +1,14 @@
 import os
-import shutil
 
 import pyblish.api
-import pyblish_magenta
+import pyblish_magenta.plugin
 from pyblish_magenta.vendor import capture
 
 from maya import cmds
 
 
 @pyblish.api.log
-class ExtractReview(pyblish.api.Extractor):
+class ExtractReview(pyblish_magenta.plugin.Extractor):
     """Extract as an image-sequence
 
     Arguments:
@@ -71,28 +70,14 @@ class ExtractReview(pyblish.api.Extractor):
             view_opts.polymeshes = True
             view_opts.nurbsSurfaces = True
 
-        # Get output directory
-        data = {'root': instance.data('root'),
-                'container': instance.data('container'),
-                'asset': instance.data('asset')}
-
-        schema = pyblish_magenta.schema.load()
-        dir_path = schema.get("model.asset").format(data)
-
         # Ensure name of camera is valid
-        path = os.path.join(dir_path, instance.data("name"))
+        path = self.temp_dir(instance)
 
         if format == 'image':
             # Append sub-directory for image-sequence
             path = os.path.join(path, camera)
         else:
             path = path + ".mov"
-
-        if os.path.isfile(path):
-            os.remove(path)
-
-        if os.path.isdir(path):
-            shutil.rmtree(path)
 
         self.log.info("Outputting to %s" % path)
 
@@ -110,5 +95,5 @@ class ExtractReview(pyblish.api.Extractor):
             maintain_aspect_ratio=maintain_aspect_ratio,
             viewport_options=view_opts,
             camera_options=cam_opts)
-        
+
         instance.set_data("outputPath", output)
