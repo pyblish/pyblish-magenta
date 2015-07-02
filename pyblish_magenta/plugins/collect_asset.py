@@ -35,6 +35,7 @@ class CollectAsset(pyblish.api.Collector):
         context.set_data('asset', asset)
 
         # Store the container's name
-        container = data['container']
-        context.set_data('container', container)
+        if 'container' in data:
+            container = data['container']
+            context.set_data('container', container)
 

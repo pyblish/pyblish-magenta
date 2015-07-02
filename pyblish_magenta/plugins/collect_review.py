@@ -6,6 +6,7 @@ import pyblish_magenta.schema
 
 @pyblish.api.log
 class CollectCameras(pyblish.api.Collector):
+    order = pyblish.api.Collector.order + 0.2
     hosts = ["maya"]
     label = "Collect Cameras"
 
@@ -27,11 +28,12 @@ class CollectCameras(pyblish.api.Collector):
             instance.add(camera)
 
             # Set pipeline data
-            data = schema.get("model.dev").parse(scene_name)
-            instance.set_data("root", data["root"])
-            instance.set_data("source_file", scene_name)
-            instance.set_data("asset", data["asset"])
-            instance.set_data("container", data["container"])
+            #data = schema.get("model.dev").parse(scene_name)
+            #instance.set_data("root", data["root"])
+            #instance.set_data("source_file", scene_name)
+            #instance.set_data("asset", data["asset"])
+            #instance.set_data("container", data["container"])
+            instance.set_data("familyId", context.data('familyId'))
 
             self.log.info("Found: {0}".format(camera))
 

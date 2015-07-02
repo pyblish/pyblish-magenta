@@ -36,8 +36,7 @@ class CollectModel(pyblish.api.Collector):
         # and ensure data is there.
         root = context.data('root')
         asset = context.data('asset')
-        container = context.data('container')
-        if not all([root, asset, container]):
+        if not all([root, asset]):
             return
 
         # Scene Geometry
@@ -77,4 +76,3 @@ class CollectModel(pyblish.api.Collector):
         instance.set_data("root", root)
         instance.set_data("workFile", context.data('workFile'))
         instance.set_data("asset", asset)
-        instance.set_data("container", container)

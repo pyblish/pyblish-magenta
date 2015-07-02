@@ -23,10 +23,10 @@ class Integrator(pyblish.api.Integrator):
     def compute_integrate_dir(self, instance):
         # Get instance data
         data = {'root': instance.data('root'),
-                'container': instance.data('container'),
+                'container': instance.data('container', None),
                 'asset': instance.data('asset')}
-        family_id = instance.data('familyId')
 
+        family_id = instance.data('familyId')
         if not family_id:
             raise pyblish.api.ConformError(
                 "No family id found on instance. Can't resolve asset path.")
