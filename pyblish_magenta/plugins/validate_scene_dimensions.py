@@ -10,6 +10,7 @@ class ValidateSceneDimensions(pyblish.api.Validator):
     category = 'geometry'
     optional = True
     version = (0, 1, 0)
+    label = "Scene Dimensions (prevent huge object)"
 
     __far = 1e5  # what we consider the far distance
 

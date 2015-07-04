@@ -16,6 +16,7 @@ class ValidateNoNamespace(pyblish.api.Validator):
     hosts = ['maya']
     category = 'cleanup'
     version = (0, 1, 0)
+    label = 'No Namespaces'
 
     def process(self, instance):
         """Process all the nodes in the instance"""

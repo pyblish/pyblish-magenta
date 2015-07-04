@@ -32,11 +32,20 @@ class CollectModel(pyblish.api.Collector):
         if not family_id or family_id != 'model':
             return
 
-        # Get the root, asset and container information
-        # and ensure data is there.
+        missing_data = []
+
         root = context.data('root')
+        if not root:
+            self.log.error("Missing `root` data for asset...")
+            missing_data.append('root')
+
         asset = context.data('asset')
-        if not all([root, asset]):
+        if not asset:
+            self.log.error("Missing `asset` data for asset...")
+            missing_data.append('asset')
+
+        if missing_data:
+            self.log.error("Asset data incomplete. Missing: {0}".format(missing_data))
             return
 
         # Scene Geometry

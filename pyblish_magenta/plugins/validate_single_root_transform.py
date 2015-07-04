@@ -12,6 +12,7 @@ class ValidateSingleRootTransform(pyblish.api.Validator):
     hosts = ['maya']
     category = 'rig'
     version = (0, 1, 0)
+    label = 'Single Root Transform'
 
     def process(self, instance):
         """Process all the nodes in the instance"""

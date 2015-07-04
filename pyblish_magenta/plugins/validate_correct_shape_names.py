@@ -34,6 +34,7 @@ class ValidateCorrectShapeNames(pyblish.api.Validator):
     category = 'cleanup'
     optional = True
     version = (0, 1, 0)
+    label = "Shape Default Naming"
 
     def process(self, instance):
         """Process all the shape nodes in the instance"""

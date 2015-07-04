@@ -19,6 +19,7 @@ class ValidateDisplayLayerEmpty(pyblish.api.Validator):
     category = 'scene'
     version = (0, 1, 0)
     optional = True
+    label = "No Empty Display Layers"
 
     __skip_layers = ['defaultLayer']
 

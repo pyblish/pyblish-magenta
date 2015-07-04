@@ -8,6 +8,7 @@ class ValidateMeshNormalsUnlocked(pyblish.api.Validator):
     hosts = ['maya']
     category = 'geometry'
     version = (0, 1, 0)
+    label = 'Mesh Normals Unlocked'
 
     def has_locked_normals(self, mesh):
 

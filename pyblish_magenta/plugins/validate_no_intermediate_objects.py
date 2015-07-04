@@ -8,6 +8,7 @@ class ValidateNoIntermediateObjects(pyblish.api.Validator):
     hosts = ['maya']
     category = 'geometry'
     version = (0, 1, 0)
+    label = "No Intermediate Objects"
 
     def process(self, instance):
         """Process all the intermediateObject nodes in the instance"""

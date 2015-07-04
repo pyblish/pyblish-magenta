@@ -22,6 +22,7 @@ class ValidateReferencesNoFailedEdits(pyblish.api.Validator):
     category = 'layout'
     optional = True
     version = (0, 1, 0)
+    label = 'References Failed Edits'
 
     def process(self, instance):
         """Process all the nodes in the instance"""

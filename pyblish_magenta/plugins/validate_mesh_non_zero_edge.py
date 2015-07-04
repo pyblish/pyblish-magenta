@@ -17,6 +17,7 @@ class ValidateMeshNonZeroEdges(pyblish.api.Validator):
     hosts = ['maya']
     category = 'geometry'
     version = (0, 1, 0)
+    label = 'Mesh Edge Length Non Zero'
 
     __tolerance = 1e-5
 
