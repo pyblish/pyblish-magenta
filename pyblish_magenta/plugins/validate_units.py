@@ -7,14 +7,20 @@ class ValidateUnits(pyblish.api.Validator):
     label = "Scene Units"
 
     def process(self, context):
+
         units = context.data('units')
+        units_angle = context.data('units_angle')
+        fps = context.data('fps')
+
+        self.log.info('Units (linear): {0}'.format(units))
+        self.log.info('Units (angular): {0}'.format(units_angle))
+        self.log.info('Units (time): {0} FPS'.format(fps))
+
         if units and units != 'cm':
             raise RuntimeError("Scene linear units must be centimeters")
 
-        units_angle = context.data('units_angle')
         if units_angle and units_angle != 'deg':
             raise RuntimeError("Scene angular units must be degrees")
 
-        fps = context.data('fps')
         if fps and fps != 25.0:
             raise RuntimeError("Scene must be 25 FPS")
