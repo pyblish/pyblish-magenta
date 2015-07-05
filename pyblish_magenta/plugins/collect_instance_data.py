@@ -12,7 +12,7 @@ class CollectInstanceData(pyblish.api.Collector):
 
     def process(self, context, instance):
 
-        for key in ['root', 'asset', 'container', 'workFile']:
+        for key in ['root', 'asset', 'container', 'workFile', 'workFileModified']:
 
             value = context.data(key, None)
             if value is not None:
