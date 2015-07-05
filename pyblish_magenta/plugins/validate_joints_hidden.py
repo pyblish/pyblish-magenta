@@ -2,7 +2,7 @@ import pyblish.api
 from maya import cmds
 
 
-def isVisible(node, displayLayer=True, intermediateObject=True, parentHidden=True, visibility=True):
+def is_visible(node, displayLayer=True, intermediateObject=True, parentHidden=True, visibility=True):
     """Is `node` visible?
 
     Returns whether a node is hidden by one of the following methods (if parameter is True):
@@ -37,16 +37,20 @@ def isVisible(node, displayLayer=True, intermediateObject=True, parentHidden=Tru
             return False
 
     if displayLayer:
-        # Note that the display layer set overrideEnabled and overrideVisibility on the node.
+        # Note that the display layer sets overrideEnabled and overrideVisibility on the node.
         if cmds.attributeQuery('overrideEnabled', node=node, exists=True):
-            if cmds.getAttr('{0}.overrideEnabled'.format(node)) and cmds.getAttr('{0}.overrideVisibility'.format(node)):
+            if cmds.getAttr('{0}.overrideEnabled'.format(node)) and \
+               cmds.getAttr('{0}.overrideVisibility'.format(node)):
                 return False
 
     if parentHidden:
         parent = cmds.listRelatives(node, parent=True)[0]
         if parent:
-            if not isVisible(parent, displayLayer=displayLayer, intermediateObject=False,
-                                     parentHidden=parentHidden, visibility=visibility):
+            if not is_visible(parent,
+                              displayLayer=displayLayer,
+                              intermediateObject=False,
+                              parentHidden=parentHidden,
+                              visibility=visibility):
                 return False
 
     return True
@@ -72,7 +76,7 @@ class ValidateJointsHidden(pyblish.api.Validator):
 
         invalid = []
         for joint in joints:
-            if isVisible(joint, displayLayer=False):
+            if is_visible(joint, displayLayer=False):
                 invalid.append(joint)
 
         if invalid:
