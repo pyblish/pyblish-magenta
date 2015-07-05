@@ -28,25 +28,16 @@ class CollectModel(pyblish.api.Collector):
         # Check whether to select a model
         # -------------------------------
         # Ensure we're in the modeling context
-        family_id = context.data('familyId')
-        if not family_id or family_id != 'model':
+        family = context.data('family')
+        if not family or family != 'model':
             return
-
-        missing_data = []
-
-        root = context.data('root')
-        if not root:
-            self.log.error("Missing `root` data for asset...")
-            missing_data.append('root')
 
         asset = context.data('asset')
         if not asset:
-            self.log.error("Missing `asset` data for asset...")
-            missing_data.append('asset')
-
-        if missing_data:
-            self.log.error("Asset data incomplete. Missing: {0}".format(missing_data))
+            self.log.error("Missing `asset` data in Context")
             return
+
+        missing_data = []
 
         # Scene Geometry
         # --------------
@@ -76,12 +67,6 @@ class CollectModel(pyblish.api.Collector):
         # Create Asset
         # ------------
         instance = context.create_instance(name=asset,
-                                           familyId=family_id,
                                            family='model')
         for node in nodes:
             instance.add(node)
-
-        # Set instance pipeline data
-        instance.set_data("root", root)
-        instance.set_data("workFile", context.data('workFile'))
-        instance.set_data("asset", asset)
