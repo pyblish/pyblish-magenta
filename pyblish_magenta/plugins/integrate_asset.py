@@ -25,9 +25,15 @@ class IntegrateAsset(pyblish.api.Integrator):
         # Get asset directory
         schema = pyblish_magenta.schema.load()
         output_template = "{0}.asset".format(family)
-        dir_path = schema.get(output_template).format(data)
+        integrate_dir = schema.get(output_template).format(data)
 
-        return dir_path
+        # Get version directory
+        version = instance.data('version', 1)
+        version_dir = 'v{0:03d}'.format(version)
+
+        output_path = os.path.join(integrate_dir, version_dir)
+
+        return output_path
 
     def integrate(self, instance):
 

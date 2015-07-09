@@ -8,7 +8,7 @@ class CollectInstanceData(pyblish.api.Collector):
 
     This transfers data from the Context to each Instance.
     """
-    order = pyblish.api.Collector.order + 0.49
+    order = pyblish.api.Collector.order + 0.4
 
     def process(self, context, instance):
 

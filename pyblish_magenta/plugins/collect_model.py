@@ -23,7 +23,7 @@ class CollectModel(pyblish.api.Collector):
     hosts = ["maya"]
 
     def process(self, context):
-        self.log.info("Selecting model..")
+        self.log.info("Collecting model..")
 
         # Check whether to select a model
         # -------------------------------
