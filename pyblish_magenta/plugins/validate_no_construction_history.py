@@ -9,6 +9,7 @@ class ValidateNoConstructionHistory(pyblish.api.Validator):
     hosts = ['maya']
     category = 'geometry'
     version = (0, 1, 0)
+    label = "No Construction History"
 
     def process(self, instance):
         """Process all the nodes in the instance"""

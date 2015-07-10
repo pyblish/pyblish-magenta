@@ -21,6 +21,7 @@ class ValidateNamespaceEmpty(pyblish.api.Validator):
     hosts = ['maya']
     category = 'scene'
     version = (0, 1, 0)
+    label = "No Empty Namespaces"
 
     __internal_namespaces = ['UI', 'shared']
     __root_namespace = ':'

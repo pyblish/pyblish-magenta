@@ -24,6 +24,7 @@ class ValidateTransformNamingSuffix(pyblish.api.Validator):
     category = 'cleanup'
     optional = True
     version = (0, 1, 0)
+    label = 'Suffix Naming Conventions'
 
     def is_valid_name(self, node_name, shape_type):
         """Returns whether node_name is correct for a transform containing a shape of `shape_type`.

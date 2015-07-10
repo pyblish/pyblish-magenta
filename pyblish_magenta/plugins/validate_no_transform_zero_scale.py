@@ -20,6 +20,7 @@ class ValidateNoTransformZeroScale(pyblish.api.Validator):
     hosts = ['maya']
     category = 'geometry'
     version = (0, 1, 0)
+    label = "Transform Zero Scale"
 
     __epsilon = 1e-5
 

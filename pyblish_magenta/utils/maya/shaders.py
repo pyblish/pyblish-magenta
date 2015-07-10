@@ -5,7 +5,6 @@ import itertools
 from maya import cmds
 
 
-
 def get_shading_engines(nodes):
     """ Return the related shadingEngines for given node shapes.
 
@@ -37,6 +36,17 @@ def get_shading_engines(nodes):
 
 
 def get_shader_assignment(shapes):
+    """ Return the shadingEngines assignments' for the given shapes.
+
+    The return format is a dictionary, for example:
+        >>> get_shader_assignment(['pSphere1Shape', 'pSphere2Shape'])
+        >>> # {'shadingEngine1": ['pSphere1Shape', 'pSphere2Shape.f[0:5]'],
+        >>> #  'shadingEngine2": ['pSphere2Shape.f[6:9]']}
+
+    :param shapes: The shapes to get the shadingEngine assignments for.
+    :return: shadingEngine shape assignment dictionary.
+    :rtype: dict
+    """
     shapes = cmds.ls(shapes, dag=1, shapes=1, long=1)
     if not shapes:
         return {}
@@ -63,7 +73,7 @@ def get_shader_assignment(shapes):
     return assignments
 
 
-def perform_shader_assignment(assignmentDict):
-    for shadingGroup, members in assignmentDict.iteritems():
+def perform_shader_assignment(assignment_dict):
+    for shadingGroup, members in assignment_dict.iteritems():
         if members:
             cmds.sets(members, e=True, forceElement=shadingGroup)

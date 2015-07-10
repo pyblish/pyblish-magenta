@@ -11,6 +11,7 @@ class ValidateSceneSetWorkspace(pyblish.api.Validator):
     hosts = ['maya']
     category = 'scene'
     version = (0, 1, 0)
+    label = 'Maya Workspace Set'
 
     def process(self, context):
         scene_name = cmds.file(q=1, sceneName=True)

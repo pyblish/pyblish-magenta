@@ -19,6 +19,7 @@ class ValidateMeshNonZeroFaceArea(pyblish.api.Validator):
     hosts = ['maya']
     category = 'geometry'
     version = (0, 1, 0)
+    label = 'Mesh Face Area Non Zero'
 
     __tolerance = 1e-8
 

@@ -15,6 +15,7 @@ class ValidateNoUnknownNodes(pyblish.api.Validator):
     category = 'cleanup'
     optional = True
     version = (0, 1, 0)
+    label = "Unknown Nodes"
 
     def process(self, instance):
         """Process all the nodes in the instance"""

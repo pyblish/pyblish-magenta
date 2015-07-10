@@ -21,6 +21,7 @@ class ValidateNodeNoGhosting(pyblish.api.Validator):
     version = (0, 1, 0)
 
     _attributes = {'ghosting': 0}
+    label = "No Ghosting"
 
     def process(self, instance):
         # Transforms and shapes seem to have ghosting

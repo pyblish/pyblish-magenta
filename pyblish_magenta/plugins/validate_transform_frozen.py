@@ -17,6 +17,7 @@ class ValidateTransformFrozen(pyblish.api.Validator):
     hosts = ['maya']
     category = 'geometry'
     version = (0, 1, 0)
+    label = 'Freeze Transforms'
 
     __identity = [1.0, 0.0, 0.0, 0.0,
                   0.0, 1.0, 0.0, 0.0,

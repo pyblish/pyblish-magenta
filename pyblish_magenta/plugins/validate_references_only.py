@@ -9,6 +9,7 @@ class ValidateReferencesOnly(pyblish.api.Validator):
     category = 'layout'
     optional = True
     version = (0, 1, 0)
+    label = 'Ensure References Only'
 
     def process(self, instance):
         """Process all the nodes in the instance"""

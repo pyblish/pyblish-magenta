@@ -13,6 +13,7 @@ class ValidateMeshLaminaFaces(pyblish.api.Validator):
     hosts = ['maya']
     category = 'geometry'
     version = (0, 1, 0)
+    label = 'Mesh Lamina Faces'
 
     def process(self, instance):
         """Process all the nodes in the instance 'objectSet'"""

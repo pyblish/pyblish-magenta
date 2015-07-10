@@ -9,6 +9,7 @@ class ValidateShapeRenderStats(pyblish.api.Validator):
     category = 'model'
     optional = False
     version = (0, 1, 0)
+    label = 'Shape Default Render Stats'
 
     __renderStats = {'castsShadows': 1,
                      'receiveShadows': 1,

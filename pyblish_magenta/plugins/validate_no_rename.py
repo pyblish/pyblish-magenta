@@ -21,6 +21,7 @@ class ValidateNoRename(pyblish.api.Validator):
     category = 'cleanup'
     optional = True
     version = (0, 1, 0)
+    label = 'No Default Naming'
 
     __simpleNames = set(['pSphere', 'pCube', 'pCylinder', 'pCone', 'pPlane', 'pTorus',
                          'pPrism', 'pPyramid', 'pPipe', 'pHelix', 'pSolid',
