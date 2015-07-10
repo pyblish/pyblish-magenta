@@ -15,7 +15,7 @@ class ExtractMayaAscii(pyblish_magenta.plugin.Extractor):
 
     label = "Maya Ascii"
     hosts = ["maya"]
-    families = ["model"]
+    families = ["model", "rig"]
     optional = True
 
     def process(self, instance):
