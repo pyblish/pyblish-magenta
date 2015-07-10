@@ -5,10 +5,10 @@ import pyblish.api
 
 
 class IntegrateIncrementVersion(pyblish.api.Integrator):
-    """ Increments the output published version before integerating. """
+    """ Increments the output published version before integrating. """
     order = pyblish.api.Integrator.order - 0.1
     optional = True
-    state = False   # could this work?
+    #active = False
 
     label = "Increment Asset Version"
 
