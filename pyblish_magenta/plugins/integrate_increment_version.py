@@ -1,6 +1,3 @@
-import os
-import shutil
-
 import pyblish.api
 
 
