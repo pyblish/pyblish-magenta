@@ -4,27 +4,33 @@ import pyblish_magenta.schema
 
 @pyblish.api.log
 class CollectAsset(pyblish.api.Collector):
+    """Parse hierarchy of the currently opened file to determine family
+
+    The family is determined via the absolute path as parsed
+    by it's corresponding schema, see :mod:`schema.py` for more.
+
+    """
+
     order = pyblish.api.Collector.order + 0.1
 
     def process(self, context):
         self.log.info("Collecting Asset..")
 
-        work_file = context.data('workFile')
-        if not work_file:
-            return
+        current_file = context.data('currentFile')
+        assert current_file, "Scene not saved, aborting"
 
         # Ensure we use a path with forward slashes
-        work_file = work_file.replace('\\', '/')
+        current_file = current_file.replace('\\', '/')
 
         # Parse with schema
+        self.log.debug("Attempting to parse current file.")
         schema = pyblish_magenta.schema.load()
-        data, template = schema.parse(work_file)
+        data, template = schema.parse(current_file)
 
-        # Note that this the family id retrieved from the template.
-        # This is not a one-to-one copy of the 'family' used in the plug-ins.
-        # That's why we store this information as 'familyId' to avoid confusion
-        family_id = template.name.split('.')[0]
-        context.set_data('familyId', family_id)
+        # Retrieve the family from the parsed template
+        family = template.name.split('.')[0]
+        context.set_data('family', family)
+        self.log.debug("Family determined to be %s" % family)
 
         # Store the project root's path
         root = data['root']
@@ -33,8 +39,11 @@ class CollectAsset(pyblish.api.Collector):
         # Store the asset name
         asset = data['asset']
         context.set_data('asset', asset)
+        self.log.debug("Storing `root={root}` and `asset={asset}` "
+                       "in Context.".format(**asset))
 
         # Store the container's name
-        container = data['container']
-        context.set_data('container', container)
-
+        if 'container' in data:
+            container = data['container']
+            context.set_data('container', container)
+            self.log.debug("Storing `container={}` too".format(container))
