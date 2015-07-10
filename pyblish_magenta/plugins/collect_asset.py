@@ -20,11 +20,9 @@ class CollectAsset(pyblish.api.Collector):
         schema = pyblish_magenta.schema.load()
         data, template = schema.parse(work_file)
 
-        # Note that this the family id retrieved from the template.
-        # This is not a one-to-one copy of the 'family' used in the plug-ins.
-        # That's why we store this information as 'familyId' to avoid confusion
-        family_id = template.name.split('.')[0]
-        context.set_data('familyId', family_id)
+        # Retrieve the family from the parsed template
+        family = template.name.split('.')[0]
+        context.set_data('family', family)
 
         # Store the project root's path
         root = data['root']
@@ -35,6 +33,7 @@ class CollectAsset(pyblish.api.Collector):
         context.set_data('asset', asset)
 
         # Store the container's name
-        container = data['container']
-        context.set_data('container', container)
+        if 'container' in data:
+            container = data['container']
+            context.set_data('container', container)
 

@@ -3,15 +3,17 @@ from maya import cmds
 
 
 class ValidateKeysNone(pyblish.api.Validator):
-    """ Validates that none of the nodes in the instance have any keys """
+    """Validates that none of the nodes in the instance have any keys"""
+
     families = ['model', 'layout']
     hosts = ['maya']
     category = 'cleanup'
     optional = True
     version = (0, 1, 0)
+    label = "No Keyframes"
 
     def process(self, instance):
-        """Process all the nodes in the instance """
+        """Process all the nodes in the instance"""
         if not instance:
             # Maya's keyframe command errors out on an empty list so we return if not anything in the instance.
             return

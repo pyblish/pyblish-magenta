@@ -8,7 +8,7 @@ from maya import cmds
 
 
 def is_subdir(path, root_dir):
-    """ Returns whether path is a subdirectory (or file) within root_dir """
+    """Returns whether path is a subdirectory (or file) within root_dir """
     path = os.path.realpath(path)
     root_dir = os.path.realpath(root_dir)
 
@@ -28,10 +28,12 @@ def is_subdir(path, root_dir):
 
 @pyblish.api.log
 class SelectLookdevInstance(pyblish.api.Selector):
-    """ Inject all models from the scene into the context (if in lookDev workspace)
+    """Inject all models from the scene into the context (if in lookDev workspace)
 
-        .. note:: This skips intermediate objects.
+    .. note:: This skips intermediate objects.
+
     """
+
     hosts = ["maya"]
 
     def process_context(self, context):

@@ -3,19 +3,23 @@ from maya import cmds
 
 
 class ValidateDisplayLayerEmpty(pyblish.api.Validator):
-    """ Validate there are no empty displayLayers in the scene.
+    """Validate there are no empty displayLayers in the scene.
 
-        .. note::
-            This is a scene wide validation.
+    .. note::
+        This is a scene wide validation.
 
-        .. note::
-            This filters out checking the display layers that exist by default in Maya
-            and are mostly hidden to the end user.
+    .. note::
+        This filters out checking the display layers
+        that exist by default in Maya and are mostly
+        hidden to the end user.
+
     """
+
     hosts = ['maya']
     category = 'scene'
     version = (0, 1, 0)
     optional = True
+    label = "No Empty Display Layers"
 
     __skip_layers = ['defaultLayer']
 
@@ -35,13 +39,13 @@ class ValidateDisplayLayerEmpty(pyblish.api.Validator):
         return empty
 
     def process(self, context):
-        """ Process the Context """
+        """Process the Context"""
         invalid = self._get_empty_layers()
 
         if invalid:
             raise ValueError("Empty displayLayers found: {0}".format(invalid))
 
     def repair(self, context):
-        """ Repair by deleting the empty layers """
+        """Repair by deleting the empty layers"""
         invalid = self._get_empty_layers()
         cmds.delete(invalid)

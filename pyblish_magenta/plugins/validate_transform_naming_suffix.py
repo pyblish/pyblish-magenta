@@ -12,19 +12,22 @@ ALLOW_IF_NOT_IN_SUFFIX_TABLE = True
 
 
 class ValidateTransformNamingSuffix(pyblish.api.Validator):
-    """ Checks whether transform naming conventions hold up for the model based on type of shape they hold.
+    """Checks whether transform naming conventions hold up for the model based on type of shape they hold.
 
-        .. warning::
-            This grabs the first child shape as a reference and doesn't use the others in the check.
+    .. warning::
+        This grabs the first child shape as a reference and doesn't use the others in the check.
+
     """
+
     families = ['model']
     hosts = ['maya']
     category = 'cleanup'
     optional = True
     version = (0, 1, 0)
+    label = 'Suffix Naming Conventions'
 
     def is_valid_name(self, node_name, shape_type):
-        """ Returns whether node_name is correct for a transform containing a shape of `shape_type`.
+        """Returns whether node_name is correct for a transform containing a shape of `shape_type`.
             :rtype: bool
         """
         if shape_type not in SUFFIX_NAMING_TABLE:

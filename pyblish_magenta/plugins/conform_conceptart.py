@@ -24,7 +24,8 @@ class ConformConceptArt(pyblish.api.Conformer):
         self.log.info("Conforming %s" % input_path)
         self.log.info("Assuming environment variable: PROJECTROOT")
 
-        assert "PROJECTROOT" in os.environ, "Missing environment variable \"PROJECTROOT\""
+        if "PROJECTROOT" not in os.environ:
+            raise Exception("Missing environment variable \"PROJECTROOT\"")
 
         schema = pyblish_magenta.schema.load()
         data, template = schema.parse(input_path)

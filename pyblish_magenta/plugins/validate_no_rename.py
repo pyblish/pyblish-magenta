@@ -9,15 +9,19 @@ def short_name(node):
 
 
 class ValidateNoRename(pyblish.api.Validator):
-    """ Checks to see if there are nodes with the original names.
-        If so it can be a cue for a scene/model that hasn't been cleaned yet.
-        This will check for geometry related names, like nurbs & polygons.
+    """Checks to see if there are nodes with the original names.
+
+    If so it can be a cue for a scene/model that hasn't been cleaned yet.
+    This will check for geometry related names, like nurbs & polygons.
+
     """
+
     families = ['model']
     hosts = ['maya']
     category = 'cleanup'
     optional = True
     version = (0, 1, 0)
+    label = 'No Default Naming'
 
     __simpleNames = set(['pSphere', 'pCube', 'pCylinder', 'pCone', 'pPlane', 'pTorus',
                          'pPrism', 'pPyramid', 'pPipe', 'pHelix', 'pSolid',
@@ -26,7 +30,7 @@ class ValidateNoRename(pyblish.api.Validator):
     __simpleNamesRegex = [re.compile('{0}[0-9]?$'.format(x)) for x in __simpleNames]
 
     def process(self, instance):
-        """Process all the nodes in the instance 'objectSet' """
+        """Process all the nodes in the instance 'objectSet'"""
         transforms = cmds.ls(instance, type='transform')
         
         invalid = []

@@ -3,7 +3,7 @@ from maya import cmds
 
 
 class ValidateReferencesNoFailedEdits(pyblish.api.Validator):
-    """ Validate that all referenced nodes' reference nodes don't have failed reference edits.
+    """Validate that all referenced nodes' reference nodes don't have failed reference edits.
 
         Failed reference edits can happen if you apply a change to a referenced object in the scene and then change
         the source of the reference (that actual file) to remove the object. The reference edit can't be applied to
@@ -14,15 +14,19 @@ class ValidateReferencesNoFailedEdits(pyblish.api.Validator):
             The terminology here can easily confuse you.
             reference node: The node that is the actual reference containing the nodes (type: referenceNode)
             referenced nodes: The nodes contained within the reference (type: any type of nodes)
+
     """
+
     families = ['layout']
     hosts = ['maya']
     category = 'layout'
     optional = True
     version = (0, 1, 0)
+    label = 'References Failed Edits'
 
     def process(self, instance):
-        """Process all the nodes in the instance """
+        """Process all the nodes in the instance"""
+
         referenced_nodes = cmds.ls(instance, referencedNodes=True, long=True)
         if not referenced_nodes:
             return
