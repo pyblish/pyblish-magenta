@@ -6,6 +6,7 @@ import pyblish.api
 
 
 class ExtractGif(pyblish.api.Extractor):
+    label = "Gif"
     families = ["review"]
     optional = True
     order = pyblish.api.Extractor.order + 0.1

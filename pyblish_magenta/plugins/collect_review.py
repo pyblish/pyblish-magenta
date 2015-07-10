@@ -1,7 +1,6 @@
 import pyblish.api
 
 import maya.cmds as cmds
-import pyblish_magenta.schema
 
 
 @pyblish.api.log
@@ -21,8 +20,6 @@ class CollectCameras(pyblish.api.Collector):
 
             # Use short name
             name = cmds.ls(camera, long=False)[0].rsplit("_CAP", 1)[0].title()
-            scene_name = cmds.file(q=1, sceneName=True)
-            schema = pyblish_magenta.schema.load()
 
             instance = context.create_instance(name=name, family="review")
             instance.add(camera)

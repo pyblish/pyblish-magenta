@@ -1,9 +1,5 @@
-import os
-import shutil
 import tempfile
-
 import pyblish.api
-import pyblish_magenta.schema
 
 
 class Extractor(pyblish.api.Extractor):

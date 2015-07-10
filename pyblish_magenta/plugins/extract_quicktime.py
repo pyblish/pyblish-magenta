@@ -8,8 +8,8 @@ from maya import cmds
 
 
 @pyblish.api.log
-class ExtractReview(pyblish_magenta.plugin.Extractor):
-    """Extract as an image-sequence
+class ExtractQuicktime(pyblish_magenta.plugin.Extractor):
+    """Extract review instances as a quicktime
 
     Arguments:
         startFrame (float): Start frame of output
@@ -31,6 +31,7 @@ class ExtractReview(pyblish_magenta.plugin.Extractor):
     families = ["review"]
     hosts = ["maya"]
     optional = True
+    label = "Quicktime"
 
     def process(self, instance):
         self.log.info("Extracting capture..")
@@ -77,11 +78,11 @@ class ExtractReview(pyblish_magenta.plugin.Extractor):
             # Append sub-directory for image-sequence
             path = os.path.join(path, camera)
         else:
-            path = path + ".mov"
+            path = os.path.join(path, instance.name + ".mov")
 
         self.log.info("Outputting to %s" % path)
 
-        output = capture.capture(
+        capture.capture(
             camera=camera,
             width=width,
             height=height,
@@ -95,5 +96,3 @@ class ExtractReview(pyblish_magenta.plugin.Extractor):
             maintain_aspect_ratio=maintain_aspect_ratio,
             viewport_options=view_opts,
             camera_options=cam_opts)
-
-        instance.set_data("outputPath", output)

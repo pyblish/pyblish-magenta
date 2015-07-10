@@ -3,62 +3,59 @@ import shutil
 
 import pyblish.api
 import pyblish_magenta
+import pyblish_magenta.schema
 
 
 class IntegrateAsset(pyblish.api.Integrator):
     label = "Integrate Asset"
 
-    def process(self, instance):
-        self.integrate(instance)
+    def process(self, context, instance):
+        extract_dir = instance.data("extractDir")
 
-    def compute_integrate_dir(self, instance):
-        # Get instance data
-        data = {'root': instance.data('root'),
-                'container': instance.data('container', None),
-                'asset': instance.data('asset')}
+        self.log.debug("Extraction directory: %s" % extract_dir)
+        assert extract_dir, (
+            "Couldn't integrate %s" % instance)
 
-        family = instance.data('family')
-        if not family:
-            raise pyblish.api.ConformError(
-                "No family found on instance. Can't resolve asset path.")
-
-        # Get asset directory
+        current_file = context.data("currentFile").replace("\\", "/")
         schema = pyblish_magenta.schema.load()
-        output_template = "{0}.asset".format(family)
-        integrate_dir = schema.get(output_template).format(data)
+        data, template = schema.parse(current_file)
 
-        # Get version directory
-        version = instance.data('version', 1)
-        version_dir = 'v{0:03d}'.format(version)
+        item = os.environ["ITEM"]
+        task = os.environ["TASK"]
 
-        output_path = os.path.join(integrate_dir, version_dir)
+        pattern = schema.get(task + ".asset")
+        assert pattern, "No schema found for %s" % task
 
-        return output_path
+        publish_dir = pattern.format(data)
+        version = context.data("version", None)
+        if version is None:
+            current_versions = os.listdir(publish_dir)
+            version = pyblish_magenta.find_next_version(current_versions)
+            context.set_data("version", version)
+            self.log.debug("current_versions: %s" % current_versions)
+            self.log.debug("next_version: %s" % version)
 
-    def integrate(self, instance):
+        version_dir = os.path.join(publish_dir, "v%03d" % version)
 
-        # Get the extracted directory
-        extract_dir = instance.data('extractDir')
-        if not extract_dir:
-            raise pyblish.api.ConformError("Cannot integrate if no `extractDir` "
-                                           "temporary directory found.")
+        # Copy the files/directories from extract directory
+        # to the integrate directory
+        self.log.info("Integrating \"%s\" version %i" % (
+            instance, version))
 
-        # Define the integrate directory
-        integrate_dir = self.compute_integrate_dir(instance)
-        instance.set_data('integrateDir', value=integrate_dir)
+        if not os.path.exists(version_dir):
+            os.makedirs(version_dir)
 
-        # Copy the files/directories from extract directory to the integrate directory
-        self.log.info("Integrating extracted files for '{0}'..".format(instance))
-        if os.path.isdir(integrate_dir):
-            self.log.info("Existing directory found, merging..")
-            for fname in os.listdir(extract_dir):
-                abspath = os.path.join(extract_dir, fname)
-                commit_path = os.path.join(integrate_dir, fname)
-                shutil.copy(abspath, commit_path)
-        else:
-            self.log.info("No existing directory found, creating..")
-            shutil.copytree(extract_dir, integrate_dir)
+        for fname in os.listdir(extract_dir):
+            src = os.path.join(extract_dir, fname)
+            dst = os.path.join(version_dir, item)
 
-        self.log.info("Integrated to directory '{0}'".format(integrate_dir))
+            self.log.info("Copying \"%s\" to \"%s\"" % (src, dst))
 
-        return integrate_dir
+            if os.path.isfile(src):
+                _, ext = os.path.splitext(fname)
+                dst += ext
+                shutil.copy(src, dst)
+            else:
+                shutil.copytree(src, dst)
+
+        self.log.info("Integrated to directory \"{0}\"".format(version_dir))
