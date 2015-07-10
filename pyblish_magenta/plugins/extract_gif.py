@@ -12,7 +12,7 @@ class ExtractGif(pyblish.api.Extractor):
     order = pyblish.api.Extractor.order + 0.1
 
     def process(self, context, instance):
-        output_path = instance.data("outputPath")
+        output_path = instance.data("reviewOutput")
         if not output_path:
             return self.log.info("No capture available for conversion.")
 

@@ -62,6 +62,7 @@ class ExtractQuicktime(pyblish_magenta.plugin.Extractor):
 
         if 'show' in instance.data():
             for nodetype in instance.data('show').split():
+                self.log.info("Overriding show: %s" % nodetype)
                 if hasattr(view_opts, nodetype):
                     setattr(view_opts, nodetype, True)
                 else:
@@ -82,7 +83,7 @@ class ExtractQuicktime(pyblish_magenta.plugin.Extractor):
 
         self.log.info("Outputting to %s" % path)
 
-        capture.capture(
+        output = capture.capture(
             camera=camera,
             width=width,
             height=height,
@@ -96,3 +97,5 @@ class ExtractQuicktime(pyblish_magenta.plugin.Extractor):
             maintain_aspect_ratio=maintain_aspect_ratio,
             viewport_options=view_opts,
             camera_options=cam_opts)
+
+        instance.set_data("reviewOutput", output)
