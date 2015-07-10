@@ -20,7 +20,6 @@ class IntegrateAsset(pyblish.api.Integrator):
         schema = pyblish_magenta.schema.load()
         data, template = schema.parse(current_file)
 
-        item = os.environ["ITEM"]
         task = os.environ["TASK"]
 
         pattern = schema.get(task + ".asset")
@@ -47,7 +46,7 @@ class IntegrateAsset(pyblish.api.Integrator):
 
         for fname in os.listdir(extract_dir):
             src = os.path.join(extract_dir, fname)
-            dst = os.path.join(version_dir, item)
+            dst = os.path.join(version_dir, instance.data("family"))
 
             self.log.info("Copying \"%s\" to \"%s\"" % (src, dst))
 
