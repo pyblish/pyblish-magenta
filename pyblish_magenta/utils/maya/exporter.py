@@ -20,10 +20,25 @@ class MayaExporter(object):
     log = logging.getLogger(__name__ + '.MayaExporter')
 
     @staticmethod
-    def export(path, nodes=None, preserveReferences=True, constructionHistory=True, expressions=True, channels=True,
-               constraints=True, displayLayers=True, objectSets=False, shader=True,
-               createFolder=True, includeChildren=True, smoothPreview=None,
-               typ='mayaAscii', verbose=False):
+    def export(path='',
+               # collection/data to export
+               nodes=None,
+               constructionHistory=True,
+               expressions=True,
+               channels=True,
+               constraints=True,
+               displayLayers=True,
+               objectSets=False,
+               shader=True,
+               includeChildren=True,
+               # output
+               createFolder=True,
+               preserveReferences=True,
+               smoothPreview=None,
+               typ='mayaAscii',
+               # settings
+               verbose=False,
+               preview=False):
         """ An expanded Maya export function that also allows to temporarily disconnect shaders, displayLayers,
             renderLayers and objectSets so they will get skipped for exporting.
 
@@ -57,12 +72,17 @@ class MayaExporter(object):
         if not nodes:
             raise RuntimeError("Nothing to export")
 
-        directory = os.path.dirname(path)
-        if not os.path.exists(directory):
-            if createFolder:
-                os.makedirs(directory)
-            else:
-                raise RuntimeError("Output directory does not exist: {0}".format(directory))
+        if not preview:
+
+            if not path:
+                raise RuntimeError("A path must be provided if not in preview mode.")
+
+            directory = os.path.dirname(path)
+            if not os.path.exists(directory):
+                if createFolder:
+                    os.makedirs(directory)
+                else:
+                    raise RuntimeError("Output directory does not exist: {0}".format(directory))
 
         # region build contexts
         contexts = [maya_context.PreserveSelection()]
@@ -73,7 +93,7 @@ class MayaExporter(object):
             # a file that comes up with only a wireframe (not even scene's default shader assigned) if shader=False
             # on export. This is an annoying inconvenience; so instead we apply the default lambert1  before export and
             # re-apply the current shader after export
-            shapes = mc.ls(nodes, shapes=True, long=True)
+            shapes = mc.ls(nodes, shapes=True, long=True, dag=True, leaf=True)
             contexts.append(maya_context.TemporaryShaders(shapes, 'initialShadingGroup'))
 
         if not displayLayers:
@@ -144,7 +164,8 @@ class MayaExporter(object):
                            expressions=expressions,
                            channels=channels,
                            constraints=constraints,
-                           shader=True)
+                           shader=True,
+                           preview=preview)
 
             if verbose:
                 MayaExporter.log.debug("Exported '%s' file to: %s", typ, output)
