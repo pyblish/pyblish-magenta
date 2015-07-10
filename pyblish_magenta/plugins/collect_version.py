@@ -26,7 +26,7 @@ class CollectVersion(pyblish.api.Collector):
 
         # Check the current versions (directories named v001, v002, v003, etc.)
         highest_version = 0
-        publish_dirs = next(os.walk('.'))[1]
+        publish_dirs = next(os.walk(output_path))[1]
 
         for publish_dir in publish_dirs:
 
