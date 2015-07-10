@@ -8,6 +8,7 @@ class ValidateSceneSaved(pyblish.api.Validator):
     This uses the `workFile` and `workFileModified` data in the instance.
     """
     label = "Scene Saved (Not modified)"
+    optional = True
 
     def process(self, instance):
 
