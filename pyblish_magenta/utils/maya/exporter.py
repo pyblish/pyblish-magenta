@@ -166,10 +166,13 @@ def export(path='',
         if exclude_nodes:
             # We'll have to ensure autokeying is OFF, because otherwise Maya
             # sometimes put keys on an object when it gets unparented.
-            contexts.append(maya_context.TemporaryAutoKeyframeState(False))
-            contexts.append(maya_context.TemporaryUnparent(exclude_nodes,
-                                                           preserve_order=True,
-                                                           relative=True))
+            autokey_ctx = maya_context.TemporaryAutoKeyframeState(False)
+            contexts.append(autokey_ctx)
+
+            ctx = maya_context.TemporaryUnparent(exclude_nodes,
+                                                 preserve_order=True,
+                                                 relative=True)
+            contexts.append(ctx)
 
     if smoothPreview is not None:
         state = bool(smoothPreview)
