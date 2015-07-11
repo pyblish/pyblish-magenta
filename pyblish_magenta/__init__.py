@@ -2,7 +2,8 @@ import os
 import pyblish.api
 
 # Local library
-import plugins
+from . import plugins
+from .lib import find_next_version
 
 
 def setup():

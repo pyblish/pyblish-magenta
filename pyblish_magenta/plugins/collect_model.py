@@ -35,7 +35,7 @@ class CollectModel(pyblish.api.Collector):
         self.log.info("Reducing nodes to shapes only")
         shapes = cmds.ls(nodes,
                          noIntermediate=True,
-                         shapes=True,
+                         exactType="mesh",
                          long=True,
                          dag=True)
 
