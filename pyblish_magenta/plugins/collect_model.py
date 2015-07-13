@@ -19,18 +19,13 @@ class CollectModel(pyblish.api.Collector):
 
         # Get the root transform
         self.log.info("Model found: %s" % name)
-        assembly = "|{name}_GRP".format(name=name)
+        assembly = "|%s_GRP" % name
 
         assert cmds.objExists(assembly), (
             "Model did not have an appropriate assembly: %s" % assembly)
 
         self.log.info("Capturing instance contents: %s" % assembly)
-        with pyblish_maya.maintained_selection():
-            cmds.select(assembly)
-            nodes = cmds.file(exportSelected=True,
-                              preview=True,
-                              constructionHistory=True,
-                              force=True)
+        nodes = self.ls(assembly)
 
         self.log.info("Reducing nodes to shapes only")
         shapes = cmds.ls(nodes,
@@ -42,6 +37,16 @@ class CollectModel(pyblish.api.Collector):
         assert shapes, "Model did not have any shapes"
 
         instance = context.create_instance(name=name, family="model")
-        instance[:] = shapes
+        instance[:] = self.ls(shapes)
 
         self.log.info("Successfully collected %s" % name)
+
+    def ls(self, objects):
+        from maya import cmds
+        with pyblish_maya.maintained_selection():
+            cmds.select(objects)
+            nodes = cmds.file(exportSelected=True,
+                              preview=True,
+                              constructionHistory=True,
+                              force=True)
+            return cmds.ls(nodes, long=True)
