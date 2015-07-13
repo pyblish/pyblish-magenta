@@ -11,5 +11,5 @@ pyblish_magenta.setup()
 
 if __name__ == '__main__':
     argv = sys.argv[:]
-    argv.extend(['--exclude=vendor', '--with-doctest', '--verbose'])
+    argv.extend(['--exclude=vendor', '--verbose'])
     nose.main(argv=argv)
