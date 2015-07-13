@@ -31,7 +31,7 @@ def test_collection():
     cmds.polyCube(name="ben_GEO")
     cmds.group(name="ben_GRP")
 
-    context = ItemList("id", pyblish.util.select())
+    context = ItemList("name", pyblish.util.select())
     context["ben"]
 
 
@@ -45,7 +45,7 @@ def test_collection_contents():
     cmds.createNode("mesh", name="myMesh")
     cmds.createNode("blinn", name="myShader")
 
-    context = ItemList("id", pyblish.util.select())
+    context = ItemList("name", pyblish.util.select())
     ben = context["ben"]
     print [i for i in ben]
     assert any(node.startswith("|ben_GRP") for node in ben)
