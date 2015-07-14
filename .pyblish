@@ -7,14 +7,15 @@ script:
 - wget https://bootstrap.pypa.io/get-pip.py && mayapy get-pip.py
 - mayapy -m pip install nose
 # Pyblish Libraries
-- cd /ci
 - git clone https://github.com/pyblish/pyblish-x.git
 - git clone https://github.com/BigRoy/lucidity.git
 - git clone https://github.com/mottosso/pyblish-magenta.git
 - cd pyblish-x
 - git submodule update --init
-- PYTHONPATH=$(pwd)/pythonpath
+
+# Expose Python modules
+- export PYTHONPATH=/root/lucidity/source:/root/pyblish-x/pythonpath
 
 # Start
-- cd ../pyblish-magenta
+- cd ..
 - mayapy run_testsuite.py
