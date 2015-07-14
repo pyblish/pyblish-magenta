@@ -13,7 +13,7 @@ class CollectRig(pyblish.api.Collector):
         from maya import cmds
 
         if not os.environ["TASK"] == "rigging":
-            return self.log.info("No model found")
+            return self.log.info("No rig found")
 
         name = os.environ["ITEM"]
 
