@@ -1,11 +1,5 @@
 environment: mottosso/maya2015-centos
 script:
-# System dependencies
-- yum install -y git
-
-# Python dependencies
-- wget https://bootstrap.pypa.io/get-pip.py && mayapy get-pip.py
-- mayapy -m pip install nose
 # Pyblish Libraries
 - git clone https://github.com/pyblish/pyblish-x.git
 - git clone https://github.com/BigRoy/lucidity.git
