@@ -21,6 +21,14 @@ def setup():
     os.environ["ITEM"] = "ben"
 
 
+def teardown():
+    # Maya throws a segmentation fault unless
+    # we run the following little hack.
+    # https://goo.gl/4oTQ2d
+    cmds.file(new=True, force=True)
+    os._exit(0)
+
+
 def initialise():
     cmds.file(new=True, force=True)
 
