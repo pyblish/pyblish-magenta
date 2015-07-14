@@ -7,8 +7,6 @@ import pyblish_maya
 class CollectModel(pyblish.api.Collector):
     """Inject all models from the scene into the context"""
 
-    hosts = ["maya"]
-
     def process(self, context):
         from maya import cmds
 
