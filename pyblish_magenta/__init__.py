@@ -1,25 +1,24 @@
-import os
-import pyblish.api
+import os as __os
+import pyblish.api as __api
+from . import plugins as __plugins
 
-# Local library
-from . import plugins
+# API
 from .lib import find_next_version
 
 
 def setup():
-    """Setup kit"""
     register_plugins()
 
 
 def register_plugins():
     """Register accompanying plugins"""
-    plugin_path = os.path.dirname(plugins.__file__)
-    pyblish.api.register_plugin_path(plugin_path)
+    plugin_path = __os.path.dirname(__plugins.__file__)
+    __api.register_plugin_path(plugin_path)
     print("pyblish_magenta: Registered %s" % plugin_path)
 
 
 def deregister_plugins():
-    """Register accompanying plugins"""
-    plugin_path = os.path.dirname(plugins.__file__)
-    pyblish.api.deregister_plugin_path(plugin_path)
+    """Deregister accompanying plugins"""
+    plugin_path = __os.path.dirname(__plugins.__file__)
+    __api.deregister_plugin_path(plugin_path)
     print("pyblish_magenta: Deregistered %s" % plugin_path)
