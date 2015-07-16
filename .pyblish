@@ -1,18 +1,18 @@
 image:
 - mottosso/maya:latest
-- mottosso/maya:2015sp5
+# - mottosso/maya:2013sp2
+# - mottosso/maya:2014sp4
+# - mottosso/maya:2015sp5
 
 script:
 # Pyblish Libraries
 - git clone https://github.com/pyblish/pyblish-x.git
 - git clone https://github.com/BigRoy/lucidity.git
 - git clone https://github.com/mottosso/pyblish-magenta.git
-- cd pyblish-x
-- git submodule update --init
+- git --git-dir pyblish-x/.git submodule update --init
 
 # Expose Python modules
-- export PYTHONPATH=/root/lucidity/source:/root/pyblish-x/pythonpath
+- export PYTHONPATH=$(pwd)/lucidity/source:$(pwd)/pyblish-x/pythonpath
 
 # Start
-- cd ..
 - python run_testsuite.py
