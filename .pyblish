@@ -1,8 +1,8 @@
 image:
 - mottosso/maya:latest
-# - mottosso/maya:2013sp2
-# - mottosso/maya:2014sp4
-# - mottosso/maya:2015sp5
+- mottosso/maya:2013sp2
+- mottosso/maya:2014sp4
+- mottosso/maya:2015sp5
 
 script:
 # Pyblish Libraries
@@ -13,8 +13,8 @@ script:
 - git submodule update --init
 
 # Expose Python modules
+- cd ..
 - export PYTHONPATH=$(pwd)/lucidity/source:$(pwd)/pyblish-x/pythonpath
 
 # Start
-- cd ..
 - python run_testsuite.py
