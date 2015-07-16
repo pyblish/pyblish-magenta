@@ -1,4 +1,7 @@
-environment: mottosso/maya2015-centos
+image:
+- mottosso/maya:latest
+- mottosso/maya:2015sp5
+
 script:
 # Pyblish Libraries
 - git clone https://github.com/pyblish/pyblish-x.git
@@ -12,4 +15,4 @@ script:
 
 # Start
 - cd ..
-- mayapy run_testsuite.py
+- python run_testsuite.py
