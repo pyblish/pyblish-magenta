@@ -1,8 +1,8 @@
 image:
 - mottosso/maya:latest
-- mottosso/maya:2013sp2
-- mottosso/maya:2014sp4
-- mottosso/maya:2015sp5
+# - mottosso/maya:2013sp2
+# - mottosso/maya:2014sp4
+# - mottosso/maya:2015sp5
 
 script:
 # Pyblish Libraries
@@ -19,4 +19,4 @@ script:
 - export PYTHONPATH=$PYTHONPATH:$(pwd)/pyblish-x/integrations/maya
 
 # Start
-- python run_testsuite.py
+- hpython run_testsuite.py
