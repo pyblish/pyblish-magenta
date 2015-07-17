@@ -11,10 +11,12 @@ script:
 - git clone https://github.com/mottosso/pyblish-magenta.git
 - cd pyblish-x
 - git submodule update --init
+- cd ..
 
 # Expose Python modules
-- cd ..
-- export PYTHONPATH=$(pwd)/lucidity/source:$(pwd)/pyblish-x/pythonpath
+- export PYTHONPATH=$(pwd)/lucidity/source
+- export PYTHONPATH=$PYTHONPATH:$(pwd)/pyblish-x/pythonpath
+- export PYTHONPATH=$PYTHONPATH:$(pwd)/pyblish-x/integrations/maya
 
 # Start
 - python run_testsuite.py
