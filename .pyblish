@@ -18,7 +18,7 @@ script:
 - export PYTHONPATH=$PYTHONPATH:$(pwd)/pyblish-x/pythonpath
 
 - |
-  if [ ${SYSTEM_IMAGE} == "mottosso/maya" ]; then
+  if [ "$SYSTEM_IMAGE" == "mottosso/maya" ]; then
     export PYTHONPATH=$PYTHONPATH:$(pwd)/pyblish-x/integrations/maya
   fi
 
