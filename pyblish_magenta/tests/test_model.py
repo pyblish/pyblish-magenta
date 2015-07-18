@@ -39,7 +39,7 @@ def test_collection():
     cmds.polyCube(name="ben_GEO")
     cmds.group(name="ben_GRP")
 
-    context = ItemList("name", pyblish.util.select())
+    context = pyblish.util.collect()
     context["ben"]
 
 
@@ -53,7 +53,7 @@ def test_collection_contents():
     cmds.createNode("mesh", name="myMesh")
     cmds.createNode("blinn", name="myShader")
 
-    context = ItemList("name", pyblish.util.select())
+    context = pyblish.util.collect()
     ben = context["ben"]
     print [i for i in ben]
     assert any(node.startswith("|ben_GRP") for node in ben)
@@ -73,52 +73,3 @@ def test_collection_contents():
 #     results = context.data("results")
 #     # print resultsa
 #     assert False
-
-
-class ItemList(list):
-    """List with keys
-
-    Raises:
-        KeyError is item is not in list
-
-    Example:
-        >>> Obj = type("Object", (object,), {})
-        >>> obj = Obj()
-        >>> obj.name = "Test"
-        >>> l = ItemList(key="name")
-        >>> l.append(obj)
-        >>> l[0] == obj
-        True
-        >>> l["Test"] == obj
-        True
-        >>> try:
-        ...   l["NotInList"]
-        ... except KeyError:
-        ...   print True
-        True
-        >>> obj == l.get("Test")
-        True
-        >>> l.get("NotInList") == None
-        True
-
-    """
-
-    def __init__(self, key, object=list()):
-        super(ItemList, self).__init__(object)
-        self.key = key
-
-    def __getitem__(self, index):
-        if isinstance(index, int):
-            return super(ItemList, self).__getitem__(index)
-
-        for item in self:
-            if getattr(item, self.key) == index:
-                return item
-
-        raise KeyError("%s not in list" % index)
-
-    def get(self, key, default=None):
-        try:
-            return self.__getitem__(key)
-        except KeyError:
-            return default
