@@ -157,7 +157,6 @@ class TemporaryUnparent(object):
         # We do this in the order of the stored order
         if self.__preserve_order:
             for node, index in self.__dag_order.iteritems():
-                print node, index
                 pyNode = pymel.core.PyNode(node)
                 if pyNode in self._original_parents:
                     cmds.reorder(pyNode.fullPath(), front=True)
