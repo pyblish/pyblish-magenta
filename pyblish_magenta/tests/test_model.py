@@ -1,4 +1,6 @@
 import os
+import logging
+import contextlib
 
 from nose.tools import with_setup
 
@@ -6,30 +8,19 @@ from nose.tools import with_setup
 import pyblish.util
 from maya import cmds
 
-import pyblish_magenta
+from . import lib
+
+log = logging.getLogger()
 
 
 def setup():
-    # Import pymel, as opposed to maya.standalone.initialise()
-    # due to pymel being imported after the fact causes the scene
-    # to erase itself and start fresh, in headless mode.
-    import pymel.core
-    pymel.core  # Avoid PEP08 warnings
-
-    pyblish_magenta.setup()
+    """All these tests relate to 'ben' of family 'model'"""
     os.environ["TASK"] = "modeling"
     os.environ["ITEM"] = "ben"
 
 
-def teardown():
-    # Maya throws a segmentation fault unless
-    # we run the following little hack.
-    # https://goo.gl/4oTQ2d
-    cmds.file(new=True, force=True)
-    os._exit(0)
-
-
 def initialise():
+    """For every test, clear the scene"""
     cmds.file(new=True, force=True)
 
 
@@ -39,13 +30,15 @@ def test_collection():
     cmds.polyCube(name="ben_GEO")
     cmds.group(name="ben_GRP")
 
-    context = pyblish.util.collect()
-    context["ben"]
+    with lib.registered("CollectModel"):
+        context = pyblish.util.select()
+
+    assert context["ben"]
 
 
 @with_setup(initialise)
 def test_collection_contents():
-    """Collecting a model without an appropriate assembly fails"""
+    """Collecting a model only includes nodes relevant to t"""
 
     cmds.polyCube(name="ben_GEO")
     cmds.group(name="ben_GRP")
@@ -53,23 +46,33 @@ def test_collection_contents():
     cmds.createNode("mesh", name="myMesh")
     cmds.createNode("blinn", name="myShader")
 
-    context = pyblish.util.collect()
+    with lib.registered("CollectModel"):
+        context = pyblish.util.select()
+
     ben = context["ben"]
-    print [i for i in ben]
     assert any(node.startswith("|ben_GRP") for node in ben)
     assert any(node.startswith("|ben_GRP|ben_GEO") for node in ben)
     assert not any(node.startswith("|myShader") for node in ben)
     assert not any(node.startswith("|myMesh") for node in ben)
 
 
-# @with_setup(initialise)
-# def test_dimensions():
-#     """Publishing model with bad dimensions fails"""
-#     cmds.polyCube(name="ben_GEO")
-#     cmds.group(name="ben_GRP")
-#     cmds.scale(1000, 1000, 1000, "ben_GEO")
+# Invalid Meshes
+@with_setup(initialise)
+def test_no_construction_history():
+    """Meshes with history are invalid"""
 
-#     context = pyblish.util.validate()
-#     results = context.data("results")
-#     # print resultsa
-#     assert False
+    # Create scene
+    cmds.polyCube(name="ben_GEO", constructionHistory=True)
+    cmds.group(name="ben_GRP")
+
+    with lib.registered("CollectModel", "ValidateNoConstructionHistory"):
+        context = pyblish.util.publish()
+
+    assert "ValidateNoConstructionHistory" in lib.errored(context)
+
+    cmds.delete("ben_GEO", constructionHistory=True)
+
+    with lib.registered("collect_model", "validate_no_construction_history"):
+        context = pyblish.util.publish()
+
+    assert not lib.errored(context)
