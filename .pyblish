@@ -1,4 +1,9 @@
-environment: mottosso/maya2015-centos
+image:
+- mottosso/maya:latest
+- mottosso/maya:2013sp2
+- mottosso/maya:2014sp4
+- mottosso/maya:2015sp5
+
 script:
 # Pyblish Libraries
 - git clone https://github.com/pyblish/pyblish-x.git
@@ -6,10 +11,16 @@ script:
 - git clone https://github.com/mottosso/pyblish-magenta.git
 - cd pyblish-x
 - git submodule update --init
+- cd ..
 
 # Expose Python modules
-- export PYTHONPATH=/root/lucidity/source:/root/pyblish-x/pythonpath
+- export PYTHONPATH=$(pwd)/lucidity/source
+- export PYTHONPATH=$PYTHONPATH:$(pwd)/pyblish-x/pythonpath
+
+- |
+  if [ "$SYSTEM_IMAGE" == "mottosso/maya" ]; then
+    export PYTHONPATH=$PYTHONPATH:$(pwd)/pyblish-x/integrations/maya
+  fi
 
 # Start
-- cd ..
-- mayapy run_testsuite.py
+- hpython run_testsuite.py

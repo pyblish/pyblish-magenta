@@ -28,11 +28,16 @@ class IntegrateAsset(pyblish.api.Integrator):
         publish_dir = pattern.format(data)
         version = context.data("version", None)
         if version is None:
-            current_versions = os.listdir(publish_dir)
-            version = pyblish_magenta.find_next_version(current_versions)
-            context.set_data("version", version)
+            current_versions = None
+            if os.path.exists(publish_dir):
+                current_versions = os.listdir(publish_dir)
+                version = pyblish_magenta.find_next_version(current_versions)
+            else:
+                version = 1
+
             self.log.debug("current_versions: %s" % current_versions)
             self.log.debug("next_version: %s" % version)
+            context.set_data("version", version)
 
         version_dir = os.path.join(publish_dir, "v%03d" % version)
 
