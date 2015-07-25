@@ -2,6 +2,7 @@ import os
 import sys
 import logging
 
+import pymel.core
 import nose
 
 # Expose Pyblish Magenta to PYTHONPATH
