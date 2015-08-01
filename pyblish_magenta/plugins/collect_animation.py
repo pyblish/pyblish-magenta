@@ -5,6 +5,11 @@ import pyblish_maya
 from pyblish_magenta.utils.maya.scene import is_visible
 
 
+def short_name(node):
+    """Return node name without namespaces and parents"""
+    return node.rsplit("|", 1)[-1].rsplit(':', 1)[-1]
+
+
 @pyblish.api.log
 class CollectAnimation(pyblish.api.Collector):
     """Inject meshes and cameras from the scene into the context"""
@@ -17,43 +22,47 @@ class CollectAnimation(pyblish.api.Collector):
 
         name = os.environ["ITEM"]
 
-        # Get the root transform
-        self.log.info("Animation found: %s" % name)
+        # Get the point cache publish sets
+        # Formatted like `<name>_pointcache_SEL`
+        anim_sets = cmds.ls('*_pointcache_SEL',
+                            recursive=True,
+                            exactType='objectSet',
+                            long=True)
 
-        start_frame = 1
-        end_frame = 10
-        frames = range(start_frame, end_frame)
+        if not anim_sets:
+            return
 
-        # Collect visible meshes
-        meshes = cmds.ls(noIntermediate=True,
-                         exactType="mesh",
-                         long=True,
-                         dag=True)
+        self.log.info("Animation sets found: {0}".format(anim_sets))
 
-        visible_meshes = list()
-        for mesh in meshes:
-            if is_visible(mesh,
-                          display_layer=False,
-                          intermediate_object=False,
-                          visibility=True,
-                          parent=True,
-                          frames=frames):
-                visible_meshes.append(mesh)
+        for anim_set in anim_sets:
 
-        # Collect non-default cameras
-        cameras = cmds.ls(exactType='camera',
-                          long=True,
-                          dag=True)
+            # Collect name
+            node_name = short_name(anim_set)
+            name = node_name.rsplit("_pointcache_SEL", 1)[0]
 
-        non_default_cameras = list()
-        for camera in cameras:
-            if not cmds.camera(camera, query=True, startupCamera=True):
-                non_default_cameras.append(camera)
+            # Collect nodes
+            nodes = cmds.sets(anim_sets, query=True)
+            # We only care about the dag nodes and want to ensure long names
+            nodes = cmds.ls(nodes, dag=True, long=True)
 
-        nodes = visible_meshes + non_default_cameras
-        assert nodes, "Animation does not have any nodes"
+            # Collect start/end frame
+            attr = '{0}.startFrame'.format(anim_set)
+            if cmds.objExists(attr):
+                start_frame = cmds.getAttr(attr)
+            else:
+                start_frame = cmds.playbackOptions(query=True, minTime=True)
 
-        instance = context.create_instance(name=name, family="animation")
-        instance[:] = nodes
+            attr = '{0}.endFrame'.format(anim_set)
+            if cmds.objExists(attr):
+                end_frame = cmds.getAttr(attr)
+            else:
+                end_frame = cmds.playbackOptions(query=True, maxTime=True)
 
-        self.log.info("Successfully collected %s" % name)
+            # Create the instance
+            instance = context.create_instance(name=name, family="animation")
+            instance[:] = nodes
+
+            instance.set_data('startFrame', start_frame)
+            instance.set_data('endFrame', end_frame)
+
+            self.log.info("Successfully collected %s" % name)
