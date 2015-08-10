@@ -21,9 +21,12 @@ class IntegrateAsset(pyblish.api.Integrator):
         data, template = schema.parse(current_file)
 
         task = os.environ["TASK"]
+        assert task == data['task'], "Task set in environment is not the same" \
+                                     "as the one that is parsed"
 
-        pattern = schema.get(task + ".asset")
-        assert pattern, "No schema found for %s" % task
+        # From the work template retrieve the publish template
+        publish_template_name = template.name.rstrip(".work") + '.publish'
+        pattern = schema.get(publish_template_name)
 
         publish_dir = pattern.format(data)
         version = context.data("version", None)
