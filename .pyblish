@@ -14,9 +14,7 @@ script:
 - cd ..
 
 # Expose Python modules
-- mkdir -p ~/maya/scripts
-- echo "__import__('sys').path.append('/usr/lib/python2.6/site-packages')" > ~/maya/scripts/userSetup.py
-- export PYTHONPATH=$(pwd)/lucidity/source
+- export PYTHONPATH=$(pwd)/lucidity/source:$PYTHONPATH
 - export PYTHONPATH=$(pwd)/pyblish-x/pythonpath:$PYTHONPATH
 
 # Start
