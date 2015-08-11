@@ -2,13 +2,13 @@ import shutil
 import pyblish.api
 
 
-class IntegrateCleanup(pyblish.api.Integrator):
+class CleanupTempdir(pyblish.api.Plugin):
     """Remove temporary directories used during extraction"""
     label = "Cleanup"
     order = 99
 
-    def process(self, instance):
+    def process(self, context):
         try:
-            shutil.rmtree(instance.data("extractDir"))
+            shutil.rmtree(context.data("extractDir"))
         except IOError:
             pass
