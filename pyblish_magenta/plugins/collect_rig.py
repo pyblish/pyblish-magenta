@@ -38,4 +38,6 @@ class CollectRig(pyblish.api.Collector):
                 if cmds.objExists(objset):
                     instance.add(objset)
 
+        instance.set_data("preserveReferences", False)
+
         self.log.info("Successfully collected %s" % name)
