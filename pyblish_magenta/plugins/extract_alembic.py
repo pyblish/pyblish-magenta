@@ -115,7 +115,7 @@ class ExtractAlembic(pyblish_magenta.plugin.Extractor):
             'dataFormat': 'ogawa'
         }
 
-    def process(self, instance):
+    def process(self, context, instance):
 
         from maya import cmds
 
@@ -123,7 +123,7 @@ class ExtractAlembic(pyblish_magenta.plugin.Extractor):
         cmds.loadPlugin('AbcExport', quiet=True)
 
         # Define extract output file path
-        dir_path = self.temp_dir(instance)
+        dir_path = self.temp_dir(context)
         filename = "{0}.abc".format(instance.name)
         path = os.path.join(dir_path, filename)
 

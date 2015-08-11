@@ -33,7 +33,7 @@ class ExtractQuicktime(pyblish_magenta.plugin.Extractor):
     optional = True
     label = "Quicktime"
 
-    def process(self, instance):
+    def process(self, context, instance):
         self.log.info("Extracting capture..")
 
         camera = instance[0]
@@ -73,7 +73,7 @@ class ExtractQuicktime(pyblish_magenta.plugin.Extractor):
             view_opts.nurbsSurfaces = True
 
         # Ensure name of camera is valid
-        path = self.temp_dir(instance)
+        path = self.temp_dir(context)
 
         if format == 'image':
             # Append sub-directory for image-sequence
