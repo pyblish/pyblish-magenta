@@ -130,7 +130,7 @@ class TemporaryUnparent(object):
 
         self.__preserve_order = preserve_order
         if self.__preserve_order:
-            self.__dag_order = scene_utils.getDagOrder()
+            self.__dag_order = scene_utils.get_dag_order()
 
         self.__unparent_nodes = nodes
         self.__temporary_parent = pymel.core.PyNode(temporary_parent) if temporary_parent else None

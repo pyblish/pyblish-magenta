@@ -1,6 +1,5 @@
 import os
 import logging
-import contextlib
 
 from nose.tools import with_setup
 
@@ -72,7 +71,7 @@ def test_no_construction_history():
 
     cmds.delete("ben_GEO", constructionHistory=True)
 
-    with lib.registered("collect_model", "validate_no_construction_history"):
+    with lib.registered("CollectModel", "ValidateNoConstructionHistory"):
         context = pyblish.util.publish()
 
     assert not lib.errored(context)

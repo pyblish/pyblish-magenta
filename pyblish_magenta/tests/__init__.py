@@ -11,7 +11,8 @@ def setup():
     pymel.core  # Avoid PEP08 warnings
 
     import pyblish_maya
-    pyblish_maya.setup()
+    pyblish_maya.register_plugins()
+    pyblish_maya.register_host()
 
 
 def teardown():
@@ -19,3 +20,4 @@ def teardown():
     # we run the following little hack.
     # https://goo.gl/4oTQ2d
     cmds.file(new=True, force=True)
+    # os._exit(0)

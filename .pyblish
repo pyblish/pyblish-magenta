@@ -1,7 +1,7 @@
 image:
-- mottosso/maya:latest
-- mottosso/maya:2013sp2
-- mottosso/maya:2014sp4
+# - mottosso/maya:latest
+# - mottosso/maya:2013sp2
+# - mottosso/maya:2014sp4
 - mottosso/maya:2015sp5
 
 script:
@@ -14,13 +14,8 @@ script:
 - cd ..
 
 # Expose Python modules
-- export PYTHONPATH=$(pwd)/lucidity/source
-- export PYTHONPATH=$PYTHONPATH:$(pwd)/pyblish-x/pythonpath
-
-- |
-  if [ "$SYSTEM_IMAGE" == "mottosso/maya" ]; then
-    export PYTHONPATH=$PYTHONPATH:$(pwd)/pyblish-x/integrations/maya
-  fi
+- export PYTHONPATH=$(pwd)/lucidity/source:$PYTHONPATH
+- export PYTHONPATH=$(pwd)/pyblish-x/pythonpath:$PYTHONPATH
 
 # Start
 - hpython run_testsuite.py

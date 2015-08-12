@@ -3,12 +3,12 @@ import pyblish.api
 
 
 class Extractor(pyblish.api.Extractor):
-    def temp_dir(self, instance):
-        """Provide a (temporary) directory in which to store files"""
-        extract_dir = instance.data('extractDir')
+    def temp_dir(self, context):
+        """Provide a temporary directory in which to store extracted files"""
+        extract_dir = context.data('extractDir')
 
         if not extract_dir:
             extract_dir = tempfile.mkdtemp()
-            instance.set_data('extractDir', value=extract_dir)
+            context.set_data('extractDir', value=extract_dir)
 
         return extract_dir
