@@ -1,28 +1,22 @@
-# stdlib
 import os
 
-# maya & pyblish lib
-import pyblish.api
 import pyblish_maya
-
-# local lib
 import pyblish_magenta.plugin
 
 
-@pyblish.api.log
 class ExtractMayaAscii(pyblish_magenta.plugin.Extractor):
-    """Extract model as Maya Ascii"""
+    """Extract as Maya Ascii"""
 
     label = "Maya Ascii"
     hosts = ["maya"]
     families = ["model", "rig"]
     optional = True
 
-    def process(self, context, instance):
+    def process(self, instance):
         from maya import cmds
 
         # Define extract output file path
-        dir_path = self.temp_dir(context)
+        dir_path = self.temp_dir(instance)
         filename = "{0}.ma".format(instance.name)
         path = os.path.join(dir_path, filename)
 
@@ -34,7 +28,7 @@ class ExtractMayaAscii(pyblish_magenta.plugin.Extractor):
                       force=True,
                       typ="mayaAscii",
                       exportSelected=True,
-                      pr=instance.data("preserveReferences", True),
+                      preserveReferences=False,
                       constructionHistory=False)
 
         self.log.info("Extracted instance '{0}' to: {1}".format(
