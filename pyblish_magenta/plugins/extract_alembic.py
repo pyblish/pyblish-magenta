@@ -1,12 +1,8 @@
 import os
-
-import pyblish.api
-import pyblish_maya
-
+import json
 import pyblish_magenta.plugin
 
 
-@pyblish.api.log
 class ExtractAlembic(pyblish_magenta.plugin.Extractor):
     """Extract Alembic Cache
 
@@ -43,9 +39,11 @@ class ExtractAlembic(pyblish_magenta.plugin.Extractor):
             an Euler filter. Euler filtering helps resolve irregularities in
             rotations especially if X, Y, and Z rotations exceed 360 degrees.
             Defaults to True.
+
     """
-    label = 'Alembic Cache (ABC)'
-    families = ["animation"]
+
+    label = "Alembic"
+    families = ["pointcache"]
     optional = True
 
     @property
@@ -61,31 +59,31 @@ class ExtractAlembic(pyblish_magenta.plugin.Extractor):
         """
 
         return {
-            'startFrame': float,
-            'endFrame': float,
-            'frameRange': str,  # "start end"; overrides startFrame & endFrame
-            'eulerFilter': bool,
-            'frameRelativeSample': float,
-            'noNormals': bool,
-            'renderableOnly': bool,
-            'step': float,
-            'stripNamespaces': bool,
-            'uvWrite': bool,
-            'wholeFrameGeo': bool,
-            'worldSpace': bool,
-            'writeVisibility': bool,
-            'writeColorSets': bool,
-            'writeFaceSets': bool,
-            'writeCreases': bool,
-            'dataFormat': str,
-            'root': (list, tuple),
-            'attr': (list, tuple),
-            'attrPrefix': (list, tuple),
-            'melPerFrameCallback': str,
-            'melPostJobCallback': str,
-            'pythonPerFrameCallback': str,
-            'pythonPostJobCallback': str,
-            'selection': bool
+            "startFrame": float,
+            "endFrame": float,
+            "frameRange": str,  # "start end"; overrides startFrame & endFrame
+            "eulerFilter": bool,
+            "frameRelativeSample": float,
+            "noNormals": bool,
+            "renderableOnly": bool,
+            "step": float,
+            "stripNamespaces": bool,
+            "uvWrite": bool,
+            "wholeFrameGeo": bool,
+            "worldSpace": bool,
+            "writeVisibility": bool,
+            "writeColorSets": bool,
+            "writeFaceSets": bool,
+            "writeCreases": bool,  # Maya 2015 Ext1+
+            "dataFormat": str,
+            "root": (list, tuple),
+            "attr": (list, tuple),
+            "attrPrefix": (list, tuple),
+            "melPerFrameCallback": str,
+            "melPostJobCallback": str,
+            "pythonPerFrameCallback": str,
+            "pythonPostJobCallback": str,
+            "selection": bool
         }
 
     @property
@@ -94,7 +92,9 @@ class ExtractAlembic(pyblish_magenta.plugin.Extractor):
 
         This may be overridden by a subclass to provide
         alternative defaults.
+
         """
+
         from maya import cmds
 
         start_frame = cmds.playbackOptions(q=True, animationStartTime=True)
@@ -106,26 +106,27 @@ class ExtractAlembic(pyblish_magenta.plugin.Extractor):
         end_frame += handles
 
         return {
-            'frameRange': "%s %s" % (start_frame, end_frame),
-            'selection': True,
-            'uvWrite': True,
-            'writeCreases': True,
-            'writeVisibility': True,
-            'eulerFilter': True,
-            'dataFormat': 'ogawa'
+            "frameRange": "%s %s" % (start_frame, end_frame),
+            "selection": True,
+            "uvWrite": True,
+            "writeVisibility": False,
+            "eulerFilter": True,
+            "dataFormat": "ogawa"  # ogawa, hdf5
         }
 
-    def process(self, context, instance):
-
+    def process(self, instance):
         from maya import cmds
+        import pyblish_maya
 
         # Ensure alembic exporter is loaded
         cmds.loadPlugin('AbcExport', quiet=True)
 
         # Define extract output file path
-        dir_path = self.temp_dir(context)
+        temp_dir = self.temp_dir(instance)
+        # parent_dir = os.path.join(temp_dir, instance.data("name"))
+        parent_dir = temp_dir
         filename = "{0}.abc".format(instance.name)
-        path = os.path.join(dir_path, filename)
+        path = os.path.join(parent_dir, filename)
 
         # Alembic Exporter requires forward slashes
         path = path.replace('\\', '/')
@@ -144,8 +145,17 @@ class ExtractAlembic(pyblish_magenta.plugin.Extractor):
         if verbose:
             self.log.debug('Alembic job string: "{0}"'.format(job_str))
 
+        if not os.path.exists(parent_dir):
+            os.makedirs(parent_dir)
+
         with pyblish_maya.maintained_selection():
-            cmds.select(instance, r=1, noExpand=True)
+            self.log.debug("Preparing %s for export using the "
+                           "following options: %s\n"
+                           "and the following string: %s"
+                           % (list(instance),
+                              json.dumps(options, indent=4),
+                              job_str))
+            cmds.select(instance, hierarchy=True)
             cmds.AbcExport(j=job_str, verbose=verbose)
 
     def parse_overrides(self, instance, options):

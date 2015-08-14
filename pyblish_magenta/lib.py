@@ -1,4 +1,12 @@
+import os
 import re
+import pyblish.api
+
+from . import plugins
+
+
+PLUGINS_PATH = os.path.dirname(plugins.__file__)
+PLUGIN_PATHS = [PLUGINS_PATH]
 
 
 def find_next_version(versions):
@@ -38,3 +46,29 @@ def find_next_version(versions):
             highest_version = version
 
     return highest_version + 1
+
+PLUGINS_PATH = os.path.dirname(plugins.__file__)
+PLUGIN_PATHS = [PLUGINS_PATH]
+
+for subdir in ("collectors", "extractors", "validators", "integrators"):
+    PLUGIN_PATHS.append(os.path.join(PLUGINS_PATH, subdir))
+
+
+def setup():
+    register_plugins()
+
+
+def register_plugins():
+    """Register accompanying plugins"""
+    for path in PLUGIN_PATHS:
+        pyblish.api.register_plugin_path(path)
+
+    print("pyblish_magenta: Registered plug-ins")
+
+
+def deregister_plugins():
+    """Deregister accompanying plugins"""
+    for path in PLUGIN_PATHS:
+        pyblish.api.deregister_plugin_path(path)
+
+    print("pyblish_magenta: Deregistered plug-ins")

@@ -4,8 +4,8 @@ import maya.utils
 from PySide.QtGui import QApplication
 
 try:
-    import pyblish_magenta
-    pyblish_magenta.setup()
+    import pyblish_magenta.api
+    pyblish_magenta.api.setup()
 
 except ImportError as e:
     print "pyblish_magenta: Could not load kit: %s" % e

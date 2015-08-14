@@ -7,8 +7,9 @@ class CollectComment(pyblish.api.Collector):
 
     def process(self, context):
         from maya import cmds
-        if not cmds.objExists("comment"):
+        if not cmds.objExists("comment.notes"):
             return
 
         comment = cmds.getAttr("comment.notes")
-        context.set_data("comment", comment)
+        instance = context.create_instance("Comment", family="comment")
+        instance.set_data("value", comment)
