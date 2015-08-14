@@ -36,33 +36,32 @@ class IntegrateAssets(pyblish.api.Integrator):
                 continue
 
             for fname in os.listdir(extract_dir):
-                # Assembly fully-qualified name
-                # E.g. thedeal_seq01_1000_animation_ben01_v002
-                name = "{topic}_{instance}_{version}".format(
-                    topic="_".join(os.environ["TOPICS"].split()),
-                    instance=instance.data("name"),
-                    version=pyblish_magenta.api.format_version(version))
-
                 src = os.path.join(extract_dir, fname)
-                dst = "{root}/{family}/{instance}/{name}".format(
+                dst = "{root}/{family}/{instance}".format(
                     root=version_dir,
                     family=instance.data("family"),
-                    instance=instance.data("name"),
-                    name=name).replace("/", os.sep)
+                    instance=instance.data("name")).replace("/", os.sep)
 
-                dirname = os.path.dirname(dst)
-                if not os.path.exists(dirname):
-                    os.makedirs(dirname)
+                if not os.path.exists(dst):
+                    os.makedirs(dst)
 
                 msg = "Copying %s \"%s\" to \"%s\""
                 if os.path.isfile(src):
-                    self.log.info(msg % ("file", src, dst))
+                    # Assembly fully-qualified name
+                    # E.g. thedeal_seq01_1000_animation_ben01_v002
+                    filename = "{topic}_{instance}_{version}".format(
+                        topic="_".join(os.environ["TOPICS"].split()),
+                        instance=instance.data("name"),
+                        version=pyblish_magenta.api.format_version(version))
+
                     _, ext = os.path.splitext(fname)
-                    dst += ext
+                    dst = os.path.join(dst, filename + ext)
+                    self.log.info(msg % ("file", src, dst))
                     shutil.copy(src, dst)
+
                 else:
-                    self.log.info(msg % ("directory", src, dst))
                     dst = os.path.join(dst, instance.data("family"))
+                    self.log.info(msg % ("directory", src, dst))
                     shutil.copytree(src, dst)
 
         self.log.info("Integrated to directory \"{0}\"".format(version_dir))

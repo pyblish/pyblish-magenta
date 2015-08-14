@@ -123,7 +123,6 @@ class ExtractAlembic(pyblish_magenta.plugin.Extractor):
             "frameRange": "%s %s" % (start_frame, end_frame),
             "selection": True,
             "uvWrite": True,
-            "writeVisibility": False,
             "eulerFilter": True,
             "dataFormat": "ogawa"  # ogawa, hdf5
         }
