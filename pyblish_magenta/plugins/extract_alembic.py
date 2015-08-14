@@ -1,4 +1,5 @@
 import os
+import json
 import pyblish_magenta.plugin
 
 
@@ -73,7 +74,7 @@ class ExtractAlembic(pyblish_magenta.plugin.Extractor):
             "writeVisibility": bool,
             "writeColorSets": bool,
             "writeFaceSets": bool,
-            "writeCreases": bool,
+            "writeCreases": bool,  # Maya 2015 Ext1+
             "dataFormat": str,
             "root": (list, tuple),
             "attr": (list, tuple),
@@ -108,10 +109,9 @@ class ExtractAlembic(pyblish_magenta.plugin.Extractor):
             "frameRange": "%s %s" % (start_frame, end_frame),
             "selection": True,
             "uvWrite": True,
-            "writeCreases": True,
-            "writeVisibility": True,
+            "writeVisibility": False,
             "eulerFilter": True,
-            "dataFormat": "ogawa"
+            "dataFormat": "ogawa"  # ogawa, hdf5
         }
 
     def process(self, instance):
@@ -149,7 +149,13 @@ class ExtractAlembic(pyblish_magenta.plugin.Extractor):
             os.makedirs(parent_dir)
 
         with pyblish_maya.maintained_selection():
-            cmds.select(instance, r=1, noExpand=True)
+            self.log.debug("Preparing %s for export using the "
+                           "following options: %s\n"
+                           "and the following string: %s"
+                           % (list(instance),
+                              json.dumps(options, indent=4),
+                              job_str))
+            cmds.select(instance, hierarchy=True)
             cmds.AbcExport(j=job_str, verbose=verbose)
 
     def parse_overrides(self, instance, options):
