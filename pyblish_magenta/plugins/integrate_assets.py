@@ -49,7 +49,7 @@ class IntegrateAssets(pyblish.api.Integrator):
                 if os.path.isfile(src):
                     # Assembly fully-qualified name
                     # E.g. thedeal_seq01_1000_animation_ben01_v002
-                    filename = "{topic}_{instance}_{version}".format(
+                    filename = "{topic}_{version}_{instance}".format(
                         topic="_".join(os.environ["TOPICS"].split()),
                         instance=instance.data("name"),
                         version=pyblish_magenta.api.format_version(version))
