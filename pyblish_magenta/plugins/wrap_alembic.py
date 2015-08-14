@@ -132,14 +132,15 @@ for path in paths:
         wrapper = os.path.join(path, wrapper).replace("\\", "/")
         
         print("Exporting to %s" % wrapper)
-        cmds.file(rename=wrapper)
-
-        cmds.file(save=True,
+        cmds.file(wrapper,
+                  exportAll=True,
                   force=True,
                   type="mayaAscii",
                   constructionHistory=True)
         print("Exported successfully")
 
+# Unless we explicitly exit, the process may
+# throw a SegmentationFault.
 sys.exit(0)
 
 """
