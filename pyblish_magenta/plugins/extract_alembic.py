@@ -1,6 +1,20 @@
 import os
 import json
+import contextlib
+
+import pyblish_maya
 import pyblish_magenta.plugin
+
+from maya import cmds
+
+
+@contextlib.contextmanager
+def suspension():
+    try:
+        cmds.refresh(suspend=True)
+        yield
+    finally:
+        cmds.refresh(suspend=False)
 
 
 class ExtractAlembic(pyblish_magenta.plugin.Extractor):
@@ -115,9 +129,6 @@ class ExtractAlembic(pyblish_magenta.plugin.Extractor):
         }
 
     def process(self, instance):
-        from maya import cmds
-        import pyblish_maya
-
         # Ensure alembic exporter is loaded
         cmds.loadPlugin('AbcExport', quiet=True)
 
@@ -148,15 +159,16 @@ class ExtractAlembic(pyblish_magenta.plugin.Extractor):
         if not os.path.exists(parent_dir):
             os.makedirs(parent_dir)
 
-        with pyblish_maya.maintained_selection():
-            self.log.debug("Preparing %s for export using the "
-                           "following options: %s\n"
-                           "and the following string: %s"
-                           % (list(instance),
-                              json.dumps(options, indent=4),
-                              job_str))
-            cmds.select(instance, hierarchy=True)
-            cmds.AbcExport(j=job_str, verbose=verbose)
+        with suspension():
+            with pyblish_maya.maintained_selection():
+                self.log.debug(
+                    "Preparing %s for export using the following options: %s\n"
+                    "and the following string: %s"
+                    % (list(instance),
+                       json.dumps(options, indent=4),
+                       job_str))
+                cmds.select(instance, hierarchy=True)
+                cmds.AbcExport(j=job_str, verbose=verbose)
 
     def parse_overrides(self, instance, options):
         """Inspect data of instance to determine overridden options

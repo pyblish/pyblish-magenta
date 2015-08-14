@@ -16,7 +16,15 @@ class IntegrateAssets(pyblish.api.Integrator):
 
         current_file = context.data("currentFile").replace("\\", "/")
         publish_dir = self.compute_publish_directory(current_file)
-        version_dir = self.compute_version_directory(publish_dir)
+
+        try:
+            existing_versions = os.listdir(publish_dir)
+            version = pyblish_magenta.api.find_next_version(existing_versions)
+        except OSError:
+            version = 1
+
+        version_dir = os.path.join(
+            publish_dir, pyblish_magenta.api.format_version(version))
 
         # Copy files/directories from the temporary
         # extraction directory to the integration directory.
@@ -28,11 +36,19 @@ class IntegrateAssets(pyblish.api.Integrator):
                 continue
 
             for fname in os.listdir(extract_dir):
+                # Assembly fully-qualified name
+                # E.g. thedeal_seq01_1000_animation_ben01_v002
+                name = "{topic}_{instance}_{version}".format(
+                    topic="_".join(os.environ["TOPICS"].split()),
+                    instance=instance.data("name"),
+                    version=pyblish_magenta.api.format_version(version))
+
                 src = os.path.join(extract_dir, fname)
-                dst = "{root}/{family}/{name}".format(
+                dst = "{root}/{family}/{instance}/{name}".format(
                     root=version_dir,
                     family=instance.data("family"),
-                    name=instance.data("name")).replace("/", os.sep)
+                    instance=instance.data("name"),
+                    name=name).replace("/", os.sep)
 
                 dirname = os.path.dirname(dst)
                 if not os.path.exists(dirname):
@@ -81,19 +97,3 @@ class IntegrateAssets(pyblish.api.Integrator):
 
         self.log.info("Got \"%s\": formatting with %s" % (pattern, data))
         return pattern.format(data)
-
-    def compute_version_directory(self, path):
-        """Given a directory of versions, determine the next version
-
-        Arguments:
-            path (str): Absolute path to directory with versions
-
-        """
-
-        try:
-            existing_versions = os.listdir(path)
-            version = pyblish_magenta.api.find_next_version(existing_versions)
-        except OSError:
-            version = 1
-
-        return os.path.join(path, "v%03d" % version)

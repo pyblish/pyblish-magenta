@@ -47,8 +47,23 @@ def find_next_version(versions):
 
     return highest_version + 1
 
-PLUGINS_PATH = os.path.dirname(plugins.__file__)
-PLUGIN_PATHS = [PLUGINS_PATH]
+
+def format_version(version):
+    """Format an integer to a version for filenames
+
+    Example:
+        >>> format_version(12)
+        'v012'
+        >>> format_version(650)
+        'v650'
+
+    Arguments:
+        version (int): Number to format
+
+    """
+
+    return "v%03d" % version
+
 
 for subdir in ("collectors", "extractors", "validators", "integrators"):
     PLUGIN_PATHS.append(os.path.join(PLUGINS_PATH, subdir))
