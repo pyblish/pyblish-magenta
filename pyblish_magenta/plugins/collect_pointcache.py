@@ -24,6 +24,11 @@ class CollectPointcache(pyblish.api.Collector):
                 self.log.debug("Skipping \"%s\"; empty set" % pointcache)
                 continue
 
+            if pointcache.count(":") > 1:
+                self.log.debug("Skipping \"%s\"; nested namespace"
+                               % pointcache)
+                continue
+
             # ben01_:pointcache_SET
             namespace, _ = pointcache.split(":", 1)
             name = namespace.strip("_") + "_pc"
