@@ -12,14 +12,14 @@ class ExtractShaderLinks(pyblish_magenta.api.Extractor):
     families = ["lookdev"]
 
     def process(self, instance):
-        self.log.info("Extracting shader links..")
+        self.log.info("Extracting links..")
         temp_dir = self.temp_dir(instance)
         temp_file = os.path.join(
             temp_dir, instance.data("name") + ".json")
 
-        connections = instance.data("links")
+        connections = instance.data("payload")
         with open(temp_file, "w") as f:
             self.log.info("Writing to disk: %s" % connections)
-            json.dump(connections, f, indent=4)
+            json.dump(connections, f, indent=2, sort_keys=True)
 
         self.log.info("Links extracted successfully")
