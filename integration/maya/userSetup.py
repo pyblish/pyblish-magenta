@@ -1,11 +1,17 @@
+from __future__ import absolute_import
+
 import os
 import maya.mel
 import maya.utils
+
 from PySide.QtGui import QApplication
 
 try:
     import pyblish_magenta.api
     pyblish_magenta.api.setup()
+
+    import pyblish_magenta.utils.maya.uuid
+    pyblish_magenta.utils.maya.uuid.register_callback()
 
 except ImportError as e:
     print "pyblish_magenta: Could not load kit: %s" % e
