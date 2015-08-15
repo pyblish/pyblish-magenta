@@ -2,7 +2,7 @@ import pyblish.api
 
 
 @pyblish.api.log
-class ValidateLinearUnits(pyblish.api.Validator):
+class ValidateUnitsLinear(pyblish.api.Validator):
     """Scene must be in linear units"""
     label = "Units (linear)"
     families = ["rig", "model"]
@@ -11,5 +11,5 @@ class ValidateLinearUnits(pyblish.api.Validator):
         units = context.data('linearUnits')
 
         self.log.info('Units (linear): {0}'.format(units))
-        assert units and units != 'cm', (
+        assert units and units == 'cm', (
             "Scene linear units must be centimeters")

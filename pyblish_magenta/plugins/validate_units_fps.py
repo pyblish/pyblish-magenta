@@ -2,7 +2,7 @@ import pyblish.api
 
 
 @pyblish.api.log
-class ValidateFps(pyblish.api.Validator):
+class ValidateUnitsFps(pyblish.api.Validator):
     """Validate the scene linear, angular and time units."""
     label = "Units (fps)"
     families = ["rig", "model"]
