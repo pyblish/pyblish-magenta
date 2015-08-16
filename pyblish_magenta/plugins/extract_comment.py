@@ -2,7 +2,7 @@ import os
 import pyblish_magenta.plugin
 
 
-class ExtractComment(pyblish_magenta.plugin.Extractor):
+class ExtractComment(pyblish_magenta.api.Extractor):
     families = ["comment"]
     optional = True
     label = "Comment"

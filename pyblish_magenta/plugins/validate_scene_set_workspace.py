@@ -19,4 +19,3 @@ class ValidateSceneSetWorkspace(pyblish.api.Validator):
 
         if not is_subdir(scene_name, root_dir):
             raise RuntimeError("Maya workspace is not set correctly.")
-

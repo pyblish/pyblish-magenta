@@ -11,6 +11,8 @@ class ValidateEnvironment(pyblish.api.Validator):
 
     """
 
+    label = "Environment"
+
     def process(self):
         import os
 
@@ -19,3 +21,4 @@ class ValidateEnvironment(pyblish.api.Validator):
         assert all(env in os.environ for env in variables), (
             "Environment not set-up correctly, missing %s"
             % " and ".join(variables))
+        self.log.info("Found it.")

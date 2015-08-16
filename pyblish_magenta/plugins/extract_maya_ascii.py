@@ -4,7 +4,7 @@ import pyblish_maya
 import pyblish_magenta.plugin
 
 
-class ExtractMayaAscii(pyblish_magenta.plugin.Extractor):
+class ExtractMayaAscii(pyblish_magenta.api.Extractor):
     """Extract as Maya Ascii"""
 
     label = "Maya Ascii"

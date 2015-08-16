@@ -17,7 +17,7 @@ def suspension():
         cmds.refresh(suspend=False)
 
 
-class ExtractAlembic(pyblish_magenta.plugin.Extractor):
+class ExtractAlembic(pyblish_magenta.api.Extractor):
     """Extract Alembic Cache
 
     This extracts an Alembic cache using the `-selection` flag to minimize

@@ -25,6 +25,6 @@ class CollectMayaUnits(pyblish.api.Selector):
         # have to parse the returned string value to FPS
         fps = mel.eval('currentTimeUnitToFPS()')
 
-        context.set_data('units', units)
-        context.set_data('units_angle', units_angle)
+        context.set_data('linearUnits', units)
+        context.set_data('angularUnits', units_angle)
         context.set_data('fps', fps)

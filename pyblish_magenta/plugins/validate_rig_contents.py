@@ -28,20 +28,25 @@ class ValidateRigContents(pyblish.api.Validator):
                              % (instance, missing))
 
         not_meshes = list()
-        not_transforms = list()
         self.log.info("Evaluating contents of object sets..")
         for node in cmds.sets("pointcache_SET", query=True):
-            if cmds.nodeType(cmds.listRelatives(node,
-                                                shapes=True,
-                                                fullPath=True)) != "mesh":
-                not_meshes.append(node)
+            shapes = list()
+            for shape in cmds.listRelatives(node,
+                                            shapes=True,
+                                            fullPath=True):
+                shapes.append(shape)
+                if cmds.nodeType(shape) != "mesh":
+                    not_meshes.append(shape)
 
+        not_transforms = list()
         for node in cmds.sets("controls_SET", query=True):
             if cmds.nodeType(node) != "transform":
                 not_meshes.append(node)
 
         assert not_transforms == [], (
-            "Only transforms can be part of the controls_SET")
+            "Only transforms can be part of the controls_SET: %s"
+            % not_transforms)
 
         assert not_meshes == [], (
-            "Only meshes can be part of the pointcache_SET")
+            "Only meshes can be part of the pointcache_SET: %s"
+            % not_meshes)
