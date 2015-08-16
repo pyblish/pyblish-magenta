@@ -19,7 +19,7 @@ class CollectCameras(pyblish.api.Collector):
             camera = cmds.listRelatives(camera_shape, parent=True)[0]
 
             # Use short name
-            name = cmds.ls(camera, long=False)[0].rsplit("_CAP", 1)[0].title()
+            name = cmds.ls(camera, long=False)[0].rsplit("_CAP", 1)[0]
 
             instance = context.create_instance(name=name, family="review")
             instance.add(camera)

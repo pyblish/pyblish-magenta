@@ -8,7 +8,7 @@ from maya import cmds
 
 
 @pyblish.api.log
-class ExtractQuicktime(pyblish_magenta.plugin.Extractor):
+class ExtractQuicktime(pyblish_magenta.api.Extractor):
     """Extract review instances as a quicktime
 
     Arguments:

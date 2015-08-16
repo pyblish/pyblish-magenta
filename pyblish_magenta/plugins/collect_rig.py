@@ -33,4 +33,11 @@ class CollectRig(pyblish.api.Collector):
                                     constructionHistory=True,
                                     force=True)
 
+            # Add rig-specific object sets
+            for objset in ("controls_SET", "pointcache_SET"):
+                if cmds.objExists(objset):
+                    instance.add(objset)
+
+        instance.set_data("preserveReferences", False)
+
         self.log.info("Successfully collected %s" % name)

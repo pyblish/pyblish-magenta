@@ -27,10 +27,13 @@ def registered(*plugins):
     pyblish.api.deregister_all_paths()
 
     with magenta_plugins():
-        for plugin in pyblish.api.discover():
-            if plugin.id not in plugins:
-                continue
-            pyblish.api.register_plugin(plugin)
+        all_plugins = dict((p.id, p) for p in pyblish.api.discover())
+
+        for plugin in plugins:
+            if plugin not in all_plugins:
+                raise KeyError("Plug-in not found: %s" % plugin)
+
+            pyblish.api.register_plugin(all_plugins[plugin])
 
     try:
         yield

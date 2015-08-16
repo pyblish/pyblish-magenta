@@ -1,17 +1,11 @@
-# stdlib
 import os
 
-# maya & pyblish lib
-import pyblish.api
 import pyblish_maya
-
-# local lib
 import pyblish_magenta.plugin
 
 
-@pyblish.api.log
-class ExtractMayaAscii(pyblish_magenta.plugin.Extractor):
-    """Extract model as Maya Ascii"""
+class ExtractMayaAscii(pyblish_magenta.api.Extractor):
+    """Extract as Maya Ascii"""
 
     label = "Maya Ascii"
     hosts = ["maya"]
@@ -34,6 +28,7 @@ class ExtractMayaAscii(pyblish_magenta.plugin.Extractor):
                       force=True,
                       typ="mayaAscii",
                       exportSelected=True,
+                      preserveReferences=False,
                       constructionHistory=False)
 
         self.log.info("Extracted instance '{0}' to: {1}".format(

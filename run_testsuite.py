@@ -12,11 +12,18 @@ sys.path.insert(0, path)
 # mute these during tests.
 logging.disable(logging.CRITICAL)
 
+if "maya" in sys.executable.lower():
+    __import__("pyblish_maya").setup()
+
+elif "houdini" in sys.executable.lower():
+    __import__("pyblish_houdini").setup()
+
+elif "nuke" in sys.executable.lower():
+    __import__("pyblish_nuke").setup()
+
 
 if __name__ == "__main__":
     argv = sys.argv[:]
-    # argv.extend(["--exclude=vendor",
-    #              "--verbose",  # Print result of each test
-    #              "--nocapture"
-    #              ])  # Don't capture stdout
-    nose.main()
+    argv.extend(['--exclude=vendor', '--verbose'])
+    nose.main(argv=argv)
+    os._exit(0)
