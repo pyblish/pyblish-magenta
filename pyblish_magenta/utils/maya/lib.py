@@ -2,6 +2,27 @@ import maya.api.OpenMaya as om
 import maya.cmds as cmds
 
 
+def lsattr(attr, value=None):
+    """Return nodes matching `key` and `value`
+
+    Arguments:
+        attr (str): Name of Maya attribute
+        value (object, optional): Value of attribute. If none
+            is provided, return all nodes with this attribute.
+
+    Example:
+        >> lsattr("id", "myId")
+        ["myNode"]
+        >> lsattr("id")
+        ["myNode", "myOtherNode"]
+
+    """
+
+    if value is None:
+        return cmds.ls("*.%s" % attr)
+    return lsattrs({attr: value})
+
+
 def lsattrs(attrs):
     """Return nodes with the given attribute(s).
 
@@ -29,18 +50,16 @@ def lsattrs(attrs):
     except RuntimeError:
         return []
 
-    namespace_levels = max(len(x.split(":"))
-        for x in cmds.namespaceInfo(":",
-            recurse=True,
-            listOnlyNamespaces=True))
+    namespaces = cmds.namespaceInfo(":", recurse=True, listOnlyNamespaces=True)
+    max_namespace_levels = max(namespaces, key=lambda n: n.count(":"))
 
     # NOTE(marcus): To Roy, this is an interesting way of handling it :)
     count = 0
-    for x in range(namespace_levels):
+    for x in range(max_namespace_levels):
         try:
             selection_list.add("{0}*.{1}".format("*:"*(x+1), first_attr))
         except RuntimeError:
-            if count >= namespace_levels:
+            if count >= max_namespace_levels:
                 raise
             else:
                 pass
