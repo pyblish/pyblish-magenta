@@ -19,7 +19,7 @@ import pyblish.api
 CREATE_NO_WINDOW = 0x08000000
 
 
-class WrapAlembics(pyblish.api.Extractor):
+class WrapAlembics(pyblish.api.Integrator):
     """Wrap alembic files with a Maya scene
 
     This plug-in launches Maya Standalone in a subprocess
@@ -33,24 +33,21 @@ class WrapAlembics(pyblish.api.Extractor):
 
     label = "Wrap Alembics"
     families = ["pointcache"]
-    order = pyblish.api.Extractor.order + 0.1
+    order = pyblish.api.Integrator.order + 0.1
     optional = True
 
     def process(self, context):
-
-        tempdir = tempfile.mkdtemp()
-        temppath = os.path.join(tempdir, "code.py")
-
         paths = list()
         for instance in context:
             if instance.data("family") != "pointcache":
                 continue
-            extract_dir = instance.data("extractDir")
-            if not extract_dir:
-                self.log.warning("%s did not have an extractDir" % instance)
+
+            integration_dir = instance.data("integrationDir")
+            if not integration_dir:
+                self.log.warning("%s did not have an integrationDir" % instance)
                 continue
 
-            paths.append(extract_dir)
+            paths.append(integration_dir)
 
         source = code.format(paths=json.dumps(paths))
 
