@@ -16,9 +16,12 @@ class ExtractShaders(pyblish_magenta.api.Extractor):
         temp_dir = self.temp_dir(instance)
         temp_file = os.path.join(temp_dir, instance.data("name"))
         with pyblish_maya.maintained_selection():
-            cmds.select(instance)
+            cmds.select(instance, noExpand=True)
+            self.log.info("Extracting \"%s\" into %s" % (
+                cmds.ls(selection=True), temp_file))
             cmds.file(temp_file,
                       force=True,
                       exportSelected=True,
                       constructionHistory=True,
-                      type="mayaAscii")
+                      type="mayaAscii",
+                      preserveReferences=False)
