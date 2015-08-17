@@ -20,7 +20,7 @@ def update_reference(reference):
     # Compare latest with current
     new_filename = filename.replace(old_version, latest_version)
     if filename != new_filename:
-        print("Updating \"%s\" from %s to %s" % (reference, 
+        print("Updating \"%s\" from %s to %s" % (reference,
                                                  old_version,
                                                  latest_version))
         # Update
