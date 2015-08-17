@@ -5,7 +5,7 @@ import pyblish.api
 class ValidateUnitsAngular(pyblish.api.Validator):
     """Scene angular units must be in degrees"""
     label = "Units (angular)"
-    families = ["rig", "model"]
+    families = ["rig", "model", "pointcache", "curves"]
 
     def process(self, context):
         units = context.data('angularUnits')
