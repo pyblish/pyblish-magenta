@@ -1,5 +1,10 @@
+import os
+import json
+
 import maya.api.OpenMaya as om
 import maya.cmds as cmds
+
+import pyblish_magenta.schema
 
 
 def lsattr(attr, value=None):
@@ -39,31 +44,21 @@ def lsattrs(attrs):
 
     """
 
+
     dep_fn = om.MFnDependencyNode()
     dag_fn = om.MFnDagNode()
+    selection_list = om.MSelectionList()
 
     first_attr = attrs.iterkeys().next()
 
     try:
-        selection_list = om.MGlobal.getSelectionListByName(
-            "*.{0}".format(first_attr))
-    except RuntimeError:
-        return []
+        selection_list.add("*.{0}".format(first_attr), 
+                           searchChildNamespaces=True)
+    except RuntimeError, e:
+        if str(e).endswith("Object does not exist"):
+            return []
 
-    namespaces = cmds.namespaceInfo(":", recurse=True, listOnlyNamespaces=True)
-    max_namespace_levels = max(namespaces, key=lambda n: n.count(":"))
-
-    # NOTE(marcus): To Roy, this is an interesting way of handling it :)
-    count = 0
-    for x in range(max_namespace_levels):
-        try:
-            selection_list.add("{0}*.{1}".format("*:"*(x+1), first_attr))
-        except RuntimeError:
-            if count >= max_namespace_levels:
-                raise
-            else:
-                pass
-
+    # NOTE(Roy): To Marcus, this should be redundant because of above captured error  
     if selection_list.length() < 1:
         return []
 
@@ -89,3 +84,85 @@ def lsattrs(attrs):
             matches.update(full_path_names)
 
     return list(matches)
+
+
+def lookdev_link():
+    schema = pyblish_magenta.schema.load()
+    origins = dict()
+    for reference in cmds.ls(type="reference"):
+        if reference in ("sharedReferenceNode",):
+            continue
+
+        filename = cmds.referenceQuery(reference, filename=True)
+
+        # Determine version of reference
+        # NOTE(marcus): Will need to determine whether we're in a shot, or asset
+        data = schema["shot.full"].parse(filename)
+        version = data["version"]
+        
+        # Reduce filename to the /publish directory
+        template = schema["shot.publish"]
+        data = template.parse(filename)
+        root = template.format(data)
+
+        versiondir = os.path.join(root, version)
+        origindir = os.path.join(versiondir, "metadata", "origin").replace("/", "\\")
+        if not os.path.exists(origindir):
+            continue  # no origin
+
+        originfile = os.path.join(origindir, os.listdir(origindir)[0])
+
+        if not originfile in origins:
+            with open(originfile) as f:
+                origins[originfile] = json.load(f)
+
+        origin = origins[originfile]
+
+        if not origin["references"]:
+            continue  # no references, no match
+
+        reference = origin["references"][0]
+        template = schema["asset.publish"]
+        data = {
+            "asset": reference["item"],
+            "root": data["root"],
+            "task": "lookdev"
+        }
+        assetdir = template.format(data)
+        
+        # NOTE(marcus): Need more robust version comparison
+        version = sorted(os.listdir(assetdir))[-1]
+        instancedir = os.path.join(assetdir, version, "lookdev", reference["item"])
+
+        # NOTE(marcus): Will need more robust versions of these
+        shaderfile = next(os.path.join(instancedir, f) for f in os.listdir(instancedir) if f.endswith(".ma"))
+        linksfile = next(os.path.join(instancedir, f) for f in os.listdir(instancedir) if f.endswith(".json"))
+        
+        # Load shaders
+        # NOTE(marcus): We'll need this to be separate, at least functionally
+        namespace = "%s_shaders_" % reference["item"]
+        if namespace not in cmds.namespaceInfo(
+                ":", recurse=True, listOnlyNamespaces=True):
+            cmds.file(shaderfile, reference=True, namespace=namespace)
+
+        with open(linksfile) as f:
+            payload = json.load(f)
+
+        for shading_group_data in payload:
+            try:
+                shading_group_node = lsattrs({"uuid": shading_group_data["uuid"]})[0]
+            except:
+                # This would be a bug
+                print("%s wasn't in the look dev scene" % shading_group_data["name"])
+                continue
+
+            for member_data in shading_group_data["members"]:
+                try:
+                    member_node = lsattrs({"uuid": member_data["uuid"]})[0]
+                except:
+                    # This would be inconsistent
+                    print("%s wasn't in the lighting scene" % shading_group_data["name"])
+                    continue
+
+                print("Adding \"%s\" to \"%s\"" % (member_node, shading_group_node))
+                cmds.sets(member_node, forceElement=shading_group_node)
