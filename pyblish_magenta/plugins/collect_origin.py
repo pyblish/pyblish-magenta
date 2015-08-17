@@ -61,4 +61,4 @@ class CollectOrigin(pyblish.api.Collector):
 
             self.log.info("Collecting %s" % references[filename])
 
-        instance[:] = references
+        instance[:] = references.values()
