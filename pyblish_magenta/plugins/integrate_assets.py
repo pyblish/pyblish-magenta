@@ -45,6 +45,9 @@ class IntegrateAssets(pyblish.api.Integrator):
                 if not os.path.exists(dst):
                     os.makedirs(dst)
 
+                # Store reference for other integrators
+                instance.set_data("integrationDir", dst)
+
                 msg = "Copying %s \"%s\" to \"%s\""
                 if os.path.isfile(src):
                     # Assembly fully-qualified name
