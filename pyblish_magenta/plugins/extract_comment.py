@@ -12,7 +12,7 @@ class ExtractComment(pyblish_magenta.api.Extractor):
         filepath = os.path.join(dir_path, "comment.txt")
 
         self.log.info("Writing comment..")
-        comment = instance.data("comment")
+        comment = instance.data("value", "")
         with open(filepath, "w") as f:
             f.write(comment)
         self.log.info("Comment successfully written!")
