@@ -93,6 +93,7 @@ class ExtractAlembic(pyblish_magenta.api.Extractor):
             "root": (list, tuple),
             "attr": (list, tuple),
             "attrPrefix": (list, tuple),
+            "userAttr": (list, tuple),
             "melPerFrameCallback": str,
             "melPostJobCallback": str,
             "pythonPerFrameCallback": str,
@@ -144,6 +145,7 @@ class ExtractAlembic(pyblish_magenta.api.Extractor):
         self.log.info("Extracting alembic to: {0}".format(path))
 
         options = self.default_options
+        options["userAttr"] = ("uuid",)
         options = self.parse_overrides(instance, options)
 
         job_str = self.parse_options(options)
