@@ -82,6 +82,19 @@ def lsattrs(attrs):
 
 
 def lookdev_link():
+    """A temporary proof-of-concept of mesh/shader linking
+
+    Each shaded mesh is associated with it's shading group
+    by way of a UUID on both shader and mesh.
+
+    This function loads the latest version of each original
+    asset from Look Development and assigns shaders to their
+    corresponsing meshes automatically.
+
+    It is ugly and needs a lot of work.
+
+    """
+
     origins_cache = dict()
     schema = pyblish_magenta.schema.load()
 
