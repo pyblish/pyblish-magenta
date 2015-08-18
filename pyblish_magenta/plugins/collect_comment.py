@@ -13,3 +13,4 @@ class CollectComment(pyblish.api.Collector):
         comment = cmds.getAttr("comment.notes")
         instance = context.create_instance("Comment", family="comment")
         instance.set_data("value", comment)
+        self.log.info("Found \"%s\"" % comment)
