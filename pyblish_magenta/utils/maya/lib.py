@@ -44,7 +44,6 @@ def lsattrs(attrs):
 
     """
 
-
     dep_fn = om.MFnDependencyNode()
     dag_fn = om.MFnDagNode()
     selection_list = om.MSelectionList()
@@ -52,15 +51,11 @@ def lsattrs(attrs):
     first_attr = attrs.iterkeys().next()
 
     try:
-        selection_list.add("*.{0}".format(first_attr), 
+        selection_list.add("*.{0}".format(first_attr),
                            searchChildNamespaces=True)
     except RuntimeError, e:
         if str(e).endswith("Object does not exist"):
             return []
-
-    # NOTE(Roy): To Marcus, this should be redundant because of above captured error  
-    if selection_list.length() < 1:
-        return []
 
     matches = set()
     for i in range(selection_list.length()):
@@ -87,8 +82,9 @@ def lsattrs(attrs):
 
 
 def lookdev_link():
+    origins_cache = dict()
     schema = pyblish_magenta.schema.load()
-    origins = dict()
+
     for reference in cmds.ls(type="reference"):
         if reference in ("sharedReferenceNode",):
             continue
@@ -96,27 +92,29 @@ def lookdev_link():
         filename = cmds.referenceQuery(reference, filename=True)
 
         # Determine version of reference
-        # NOTE(marcus): Will need to determine whether we're in a shot, or asset
+        # NOTE(marcus): Will need to determine whether
+        # we're in a shot, or asset
         data = schema["shot.full"].parse(filename)
         version = data["version"]
-        
+
         # Reduce filename to the /publish directory
         template = schema["shot.publish"]
         data = template.parse(filename)
         root = template.format(data)
 
         versiondir = os.path.join(root, version)
-        origindir = os.path.join(versiondir, "metadata", "origin").replace("/", "\\")
+        origindir = os.path.join(
+            versiondir, "metadata", "origin").replace("/", "\\")
         if not os.path.exists(origindir):
             continue  # no origin
 
         originfile = os.path.join(origindir, os.listdir(origindir)[0])
 
-        if not originfile in origins:
+        if originfile not in origins_cache:
             with open(originfile) as f:
-                origins[originfile] = json.load(f)
+                origins_cache[originfile] = json.load(f)
 
-        origin = origins[originfile]
+        origin = origins_cache[originfile]
 
         if not origin["references"]:
             continue  # no references, no match
@@ -129,15 +127,20 @@ def lookdev_link():
             "task": "lookdev"
         }
         assetdir = template.format(data)
-        
+
         # NOTE(marcus): Need more robust version comparison
         version = sorted(os.listdir(assetdir))[-1]
-        instancedir = os.path.join(assetdir, version, "lookdev", reference["item"])
+        instancedir = os.path.join(
+            assetdir, version, "lookdev", reference["item"])
 
         # NOTE(marcus): Will need more robust versions of these
-        shaderfile = next(os.path.join(instancedir, f) for f in os.listdir(instancedir) if f.endswith(".ma"))
-        linksfile = next(os.path.join(instancedir, f) for f in os.listdir(instancedir) if f.endswith(".json"))
-        
+        shaderfile = next(os.path.join(instancedir, f)
+                          for f in os.listdir(instancedir)
+                          if f.endswith(".ma"))
+        linksfile = next(os.path.join(instancedir, f)
+                         for f in os.listdir(instancedir)
+                         if f.endswith(".json"))
+
         # Load shaders
         # NOTE(marcus): We'll need this to be separate, at least functionally
         namespace = "%s_shaders_" % reference["item"]
@@ -148,21 +151,15 @@ def lookdev_link():
         with open(linksfile) as f:
             payload = json.load(f)
 
-        for shading_group_data in payload:
-            try:
-                shading_group_node = lsattrs({"uuid": shading_group_data["uuid"]})[0]
-            except:
-                # This would be a bug
-                print("%s wasn't in the look dev scene" % shading_group_data["name"])
-                continue
+        for sgdata in payload:
+            for count, sgnode in enumerate(lsattrs({"uuid": sgdata["uuid"]})):
+                assert count < 1, "More than one shading group found"
+                for mdata in sgdata["members"]:
+                    for mnode in lsattrs({"uuid": mdata["uuid"]}):
+                        # There may be more than one mesh with a UUID
 
-            for member_data in shading_group_data["members"]:
-                try:
-                    member_node = lsattrs({"uuid": member_data["uuid"]})[0]
-                except:
-                    # This would be inconsistent
-                    print("%s wasn't in the lighting scene" % shading_group_data["name"])
-                    continue
+                        if mdata["components"]:
+                            mnode = mnode + "." + mdata["components"]
 
-                print("Adding \"%s\" to \"%s\"" % (member_node, shading_group_node))
-                cmds.sets(member_node, forceElement=shading_group_node)
+                        print("Adding \"%s\" to \"%s\"" % (mnode, sgnode))
+                        cmds.sets(mnode, forceElement=sgnode)

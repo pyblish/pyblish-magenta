@@ -41,8 +41,9 @@ class CollectShaders(pyblish.api.Collector):
 
                 self.log.debug("Such as %s.." % member)
                 sets[objset]["members"].append({
-                    "name": member,
+                    "name": node,
                     "uuid": cmds.getAttr(node + ".uuid"),
+                    "components": components,
                     "properties": dict(
                         (attr, cmds.getAttr(node + "." + attr))
                         for attr in (
