@@ -23,7 +23,17 @@ class CollectModel(pyblish.api.Collector):
             "Model did not have an appropriate assembly: %s" % assembly)
 
         self.log.info("Capturing instance contents: %s" % assembly)
-        nodes = self.ls(assembly)
+        with pyblish_maya.maintained_selection():
+            cmds.select(assembly)
+            nodes = cmds.file(exportSelected=True,
+                              preview=True,
+                              constructionHistory=False,
+                              force=True,
+                              shader=False,
+                              channels=False,
+                              expressions=False,
+                              constraints=False)
+            nodes = cmds.ls(nodes, long=True)
 
         self.log.info("Reducing nodes to shapes only")
         shapes = cmds.ls(nodes,
@@ -38,17 +48,3 @@ class CollectModel(pyblish.api.Collector):
         instance[:] = nodes
 
         self.log.info("Successfully collected %s" % name)
-
-    def ls(self, objects):
-        from maya import cmds
-        with pyblish_maya.maintained_selection():
-            cmds.select(objects)
-            nodes = cmds.file(exportSelected=True,
-                              preview=True,
-                              constructionHistory=False,
-                              force=True,
-                              shader=False,
-                              channels=False,
-                              expressions=False,
-                              constraints=False)
-            return cmds.ls(nodes, long=True)
