@@ -18,7 +18,18 @@ class ValidateZeroTransform(pyblish.api.Validator):
     __tolerance = 1e-30
 
     def process(self, instance):
-        """Process all the nodes in the instance "objectSet" """
+        """Process all the nodes in the instance "objectSet"
+
+        This is the same as checking:
+        - translate == [0, 0, 0] and rotate == [0, 0, 0] and
+          scale == [1, 1, 1] and shear == [0, 0, 0]
+
+        .. note::
+            This will also catch camera transforms if those
+            are in the instances.
+
+        """
+
         transforms = cmds.ls(instance, type="transform")
 
         invalid = []
