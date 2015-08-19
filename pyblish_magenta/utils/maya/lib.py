@@ -82,6 +82,19 @@ def lsattrs(attrs):
 
 
 def lookdev_link():
+    """A temporary proof-of-concept of mesh/shader linking
+
+    Each shaded mesh is associated with it's shading group
+    by way of a UUID on both shader and mesh.
+
+    This function loads the latest version of each original
+    asset from Look Development and assigns shaders to their
+    corresponsing meshes automatically.
+
+    It is ugly and needs a lot of work.
+
+    """
+
     origins_cache = dict()
     schema = pyblish_magenta.schema.load()
 
@@ -94,7 +107,12 @@ def lookdev_link():
         # Determine version of reference
         # NOTE(marcus): Will need to determine whether
         # we're in a shot, or asset
-        data = schema["shot.full"].parse(filename)
+        try:
+            data = schema["shot.full"].parse(filename)
+        except:
+            # Not a shot reference
+            continue
+
         version = data["version"]
 
         # Reduce filename to the /publish directory
@@ -116,50 +134,54 @@ def lookdev_link():
 
         origin = origins_cache[originfile]
 
-        if not origin["references"]:
-            continue  # no references, no match
+        for reference in origin["references"]:
+            template = schema["asset.publish"]
+            data = {
+                "asset": reference["item"],
+                "root": data["root"],
+                "task": "lookdev"
+            }
+            assetdir = template.format(data)
 
-        reference = origin["references"][0]
-        template = schema["asset.publish"]
-        data = {
-            "asset": reference["item"],
-            "root": data["root"],
-            "task": "lookdev"
-        }
-        assetdir = template.format(data)
+            # NOTE(marcus): Need more robust version comparison
+            try:
+                version = sorted(os.listdir(assetdir))[-1]
+            except OSError:
+                # no versions
+                continue
 
-        # NOTE(marcus): Need more robust version comparison
-        version = sorted(os.listdir(assetdir))[-1]
-        instancedir = os.path.join(
-            assetdir, version, "lookdev", reference["item"])
+            instancedir = os.path.join(
+                assetdir, version, "lookdev", reference["item"])
 
-        # NOTE(marcus): Will need more robust versions of these
-        shaderfile = next(os.path.join(instancedir, f)
-                          for f in os.listdir(instancedir)
-                          if f.endswith(".ma"))
-        linksfile = next(os.path.join(instancedir, f)
-                         for f in os.listdir(instancedir)
-                         if f.endswith(".json"))
+            # NOTE(marcus): Will need more robust versions of these
+            shaderfile = next(os.path.join(instancedir, f)
+                              for f in os.listdir(instancedir)
+                              if f.endswith(".ma"))
+            linksfile = next(os.path.join(instancedir, f)
+                             for f in os.listdir(instancedir)
+                             if f.endswith(".json"))
 
-        # Load shaders
-        # NOTE(marcus): We'll need this to be separate, at least functionally
-        namespace = "%s_shaders_" % reference["item"]
-        if namespace not in cmds.namespaceInfo(
-                ":", recurse=True, listOnlyNamespaces=True):
-            cmds.file(shaderfile, reference=True, namespace=namespace)
+            # Load shaders
+            # NOTE(marcus): We'll need this to be separate,
+            # at least functionally
+            namespace = "%s_shaders_" % reference["item"]
+            if namespace not in cmds.namespaceInfo(
+                    ":", recurse=True, listOnlyNamespaces=True):
+                cmds.file(shaderfile, reference=True, namespace=namespace)
 
-        with open(linksfile) as f:
-            payload = json.load(f)
+            with open(linksfile) as f:
+                payload = json.load(f)
 
-        for sgdata in payload:
-            for count, sgnode in enumerate(lsattrs({"uuid": sgdata["uuid"]})):
-                assert count < 1, "More than one shading group found"
-                for mdata in sgdata["members"]:
-                    for mnode in lsattrs({"uuid": mdata["uuid"]}):
-                        # There may be more than one mesh with a UUID
+            for sgdata in payload:
+                attrs = lsattrs({"uuid": sgdata["uuid"]})
+                for count, sgnode in enumerate(attrs):
+                    assert count < 1, "More than one shading group found"
+                    for mdata in sgdata["members"]:
+                        for mnode in lsattrs({"uuid": mdata["uuid"]}):
+                            # There may be more than one mesh with a UUID
 
-                        if mdata["components"]:
-                            mnode = mnode + "." + mdata["components"]
+                            if mdata["components"]:
+                                mnode = mnode + "." + mdata["components"]
 
-                        print("Adding \"%s\" to \"%s\"" % (mnode, sgnode))
-                        cmds.sets(mnode, forceElement=sgnode)
+                            print("Adding \"%s\" to \"%s\"" % (mnode, sgnode))
+                            cmds.sets(mnode, forceElement=sgnode)
