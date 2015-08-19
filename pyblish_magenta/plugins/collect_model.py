@@ -35,7 +35,7 @@ class CollectModel(pyblish.api.Collector):
         assert shapes, "Model did not have any shapes"
 
         instance = context.create_instance(name=name, family="model")
-        instance[:] = self.ls(shapes)
+        instance[:] = nodes
 
         self.log.info("Successfully collected %s" % name)
 
