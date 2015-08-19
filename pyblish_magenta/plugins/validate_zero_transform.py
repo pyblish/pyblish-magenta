@@ -3,7 +3,13 @@ from maya import cmds
 
 
 class ValidateZeroTransform(pyblish.api.Validator):
-    """Transforms can't have any values"""
+    """Transforms can't have any values
+
+    To solve this issue, try freezing the transforms. So long
+    as the transforms, rotation and scale values are zero,
+    you're all good.
+
+    """
 
     families = ["model"]
     hosts = ["maya"]
