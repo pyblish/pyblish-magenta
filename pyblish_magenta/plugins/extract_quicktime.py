@@ -106,5 +106,7 @@ class ExtractQuicktime(pyblish_magenta.api.Extractor):
 @contextlib.contextmanager
 def maintained_time():
     ct = cmds.currentTime(query=True)
-    yield
-    cmds.currentTime(ct, edit=True)
+    try:
+        yield
+    finally:
+        cmds.currentTime(ct, edit=True)
