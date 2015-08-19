@@ -4,7 +4,13 @@ from maya import cmds
 
 
 def update_reference(reference):
-    """Update reference to the latest version"""
+    """Update reference to the latest version
+
+    Arguments:
+        reference (str): Name of reference node
+
+    """
+
     filename = cmds.referenceQuery(reference, filename=True)
 
     # NOTE(marcus): This should be based on something more
@@ -33,3 +39,15 @@ def update_reference(reference):
         cmds.file(new_filename, loadReference=reference)
     else:
         print("\"%s\" already up to date" % reference)
+
+
+def update_selected_references():
+    """Convenience method of :func:`update_reference`
+
+    Usage:
+        Select reference node, and run this function.
+
+    """
+
+    for reference in cmds.ls(selection=True, type="reference"):
+        update_reference(reference)
