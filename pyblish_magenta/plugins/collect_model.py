@@ -46,5 +46,6 @@ class CollectModel(pyblish.api.Collector):
             nodes = cmds.file(exportSelected=True,
                               preview=True,
                               constructionHistory=True,
-                              force=True)
+                              force=True,
+                              shader=False)
             return cmds.ls(nodes, long=True)
