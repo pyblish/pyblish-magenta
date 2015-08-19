@@ -1,4 +1,5 @@
 import os
+import contextlib
 
 import pyblish.api
 import pyblish_magenta.plugin
@@ -83,19 +84,29 @@ class ExtractQuicktime(pyblish_magenta.api.Extractor):
 
         self.log.info("Outputting to %s" % path)
 
-        output = capture.capture(
-            camera=camera,
-            width=width,
-            height=height,
-            filename=path,
-            start_frame=start_frame,
-            end_frame=end_frame,
-            format=format,
-            viewer=False,
-            compression=compression,
-            off_screen=off_screen,
-            maintain_aspect_ratio=maintain_aspect_ratio,
-            viewport_options=view_opts,
-            camera_options=cam_opts)
+        with maintained_time():
+            output = capture.capture(
+                camera=camera,
+                width=width,
+                height=height,
+                filename=path,
+                start_frame=start_frame,
+                end_frame=end_frame,
+                format=format,
+                viewer=False,
+                compression=compression,
+                off_screen=off_screen,
+                maintain_aspect_ratio=maintain_aspect_ratio,
+                viewport_options=view_opts,
+                camera_options=cam_opts)
 
         instance.set_data("reviewOutput", output)
+
+
+@contextlib.contextmanager
+def maintained_time():
+    ct = cmds.currentTime(query=True)
+    try:
+        yield
+    finally:
+        cmds.currentTime(ct, edit=True)
