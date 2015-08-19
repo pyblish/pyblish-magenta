@@ -1,3 +1,4 @@
+import os
 import pyblish.api
 
 
@@ -45,5 +46,9 @@ class CollectPointcache(pyblish.api.Collector):
             instance.set_data("name", namespace.strip("_"))
             instance.set_data("startFrame", start_frame)
             instance.set_data("endFrame", end_frame)
+
+            # Don't publish by default, unless you're animating
+            if os.environ["TASK"] != "animation":
+                instance.set_data("publish", False)
 
             self.log.info("Successfully collected %s" % name)
