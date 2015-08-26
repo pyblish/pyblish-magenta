@@ -12,7 +12,7 @@ class ExtractOrigin(pyblish_magenta.api.Extractor):
     def process(self, instance):
         temp_dir = self.temp_dir(instance)
         temp_file = os.path.join(temp_dir, "origin.json")
-        
+
         serialised = dict(
             instance.data("metadata"),
             references=list(instance)

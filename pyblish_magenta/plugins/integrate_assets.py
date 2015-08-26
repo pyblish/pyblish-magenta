@@ -9,7 +9,7 @@ import pyblish_magenta.schema
 class IntegrateAssets(pyblish.api.Integrator):
     """Name and position instances on disk"""
 
-    label = "Integrate Assets"
+    label = "Assets"
 
     def process(self, context):
         self.log.debug("Source file: %s" % context.data("currentFile"))
@@ -42,9 +42,6 @@ class IntegrateAssets(pyblish.api.Integrator):
                     family=instance.data("family"),
                     instance=instance.data("name")).replace("/", os.sep)
 
-                if not os.path.exists(dst):
-                    os.makedirs(dst)
-
                 # Store reference for other integrators
                 instance.set_data("integrationDir", dst)
 
@@ -52,6 +49,10 @@ class IntegrateAssets(pyblish.api.Integrator):
                 if os.path.isfile(src):
                     # Assembly fully-qualified name
                     # E.g. thedeal_seq01_1000_animation_ben01_v002
+
+                    if not os.path.exists(dst):
+                        os.makedirs(dst)
+
                     filename = "{topic}_{version}_{instance}".format(
                         topic="_".join(os.environ["TOPICS"].split()),
                         instance=instance.data("name"),
@@ -63,7 +64,7 @@ class IntegrateAssets(pyblish.api.Integrator):
                     shutil.copy(src, dst)
 
                 else:
-                    dst = os.path.join(dst, instance.data("family"))
+                    dst = os.path.join(dst, fname)
                     self.log.info(msg % ("directory", src, dst))
                     shutil.copytree(src, dst)
 
@@ -93,9 +94,8 @@ class IntegrateAssets(pyblish.api.Integrator):
                 data=data["task"]))
 
         self.log.info("Retrieving template from schema..")
-        publish_template_name = template.name.rsplit(
-            ".work", 1)[0] + ".publish"
-        pattern = schema.get(publish_template_name)
+        pattern = schema.get(template.name.rsplit(
+            ".work", 1)[0] + ".publish")
 
         self.log.info("Got \"%s\": formatting with %s" % (pattern, data))
         return pattern.format(data)
