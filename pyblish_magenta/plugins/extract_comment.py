@@ -1,5 +1,5 @@
 import os
-import pyblish_magenta.plugin
+import pyblish_magenta.api
 
 
 class ExtractComment(pyblish_magenta.api.Extractor):
