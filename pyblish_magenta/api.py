@@ -10,6 +10,13 @@ from .plugin import (
     Extractor
 )
 
+# third-party
+from .vendor.inflection import (
+    humanize,
+    underscore,
+    camelize
+)
+
 __all__ = [
     "setup",
     "register_plugins",
@@ -18,4 +25,9 @@ __all__ = [
     "format_version",
 
     "Extractor",
+
+    # third-party
+    "humanize",
+    "underscore",
+    "camelize",
 ]
