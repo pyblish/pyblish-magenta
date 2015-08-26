@@ -42,9 +42,6 @@ class IntegrateAssets(pyblish.api.Integrator):
                     family=instance.data("family"),
                     instance=instance.data("name")).replace("/", os.sep)
 
-                if not os.path.exists(dst):
-                    os.makedirs(dst)
-
                 # Store reference for other integrators
                 instance.set_data("integrationDir", dst)
 
@@ -52,6 +49,10 @@ class IntegrateAssets(pyblish.api.Integrator):
                 if os.path.isfile(src):
                     # Assembly fully-qualified name
                     # E.g. thedeal_seq01_1000_animation_ben01_v002
+
+                    if not os.path.exists(dst):
+                        os.makedirs(dst)
+
                     filename = "{topic}_{version}_{instance}".format(
                         topic="_".join(os.environ["TOPICS"].split()),
                         instance=instance.data("name"),
@@ -63,7 +64,7 @@ class IntegrateAssets(pyblish.api.Integrator):
                     shutil.copy(src, dst)
 
                 else:
-                    dst = os.path.join(dst, instance.data("family"))
+                    dst = os.path.join(dst, fname)
                     self.log.info(msg % ("directory", src, dst))
                     shutil.copytree(src, dst)
 
