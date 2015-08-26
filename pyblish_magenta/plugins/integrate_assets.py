@@ -9,7 +9,7 @@ import pyblish_magenta.schema
 class IntegrateAssets(pyblish.api.Integrator):
     """Name and position instances on disk"""
 
-    label = "Integrate Assets"
+    label = "Assets"
 
     def process(self, context):
         self.log.debug("Source file: %s" % context.data("currentFile"))
@@ -93,9 +93,8 @@ class IntegrateAssets(pyblish.api.Integrator):
                 data=data["task"]))
 
         self.log.info("Retrieving template from schema..")
-        publish_template_name = template.name.rsplit(
-            ".work", 1)[0] + ".publish"
-        pattern = schema.get(publish_template_name)
+        pattern = schema.get(template.name.rsplit(
+            ".work", 1)[0] + ".publish")
 
         self.log.info("Got \"%s\": formatting with %s" % (pattern, data))
         return pattern.format(data)
